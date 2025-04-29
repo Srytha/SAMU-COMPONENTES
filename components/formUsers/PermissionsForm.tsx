@@ -20,7 +20,6 @@ export default function PermissionsForm() {
               <Label htmlFor="modulo-usuarios">Gestión de Usuarios</Label>
               <Switch id="modulo-usuarios" />
             </div>
-            {/* Resto de switches de módulos */}
           </div>
         </div>
 
@@ -33,7 +32,6 @@ export default function PermissionsForm() {
               <Label htmlFor="accion-crear">Crear Registros</Label>
               <Switch id="accion-crear" defaultChecked />
             </div>
-            {/* Resto de switches de acciones */}
           </div>
         </div>
 

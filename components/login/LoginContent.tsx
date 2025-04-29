@@ -23,12 +23,12 @@ export default function LoginContent() {
     
     if (cedula.trim() === "") {
       setError("Por favor, ingrese su cédula.");
-      return;
+      return; 
     }
     
     try {
       setIsLoading(true);
-      // Simulando un retraso en la red
+      // Simulando un retraso en la red pa q se vea cool
       await new Promise(resolve => setTimeout(resolve, 800));
       login(cedula);
       setIsLoading(false);
@@ -40,7 +40,6 @@ export default function LoginContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-indigo-50">
-      {/* Header exactamente igual al de la imagen de referencia */}
       <header className="bg-blue-600 text-white sticky top-0 z-10 shadow-md py-4">
         <div className="container mx-auto px-4 flex items-center justify-between">
           <div className="flex items-center gap-2">

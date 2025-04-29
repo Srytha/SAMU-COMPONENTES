@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import Footer from "@/components/footer/Footer"
-import ResultadoConsulta from "@/components/checkStatus/QueryResult"
-import ConsultaPorNumero from "@/components/checkStatus/QueryByNumber"
-import ConsultaPorDocumento from "@/components/checkStatus/QueryByDocument"
+import Footer from "@/components/footer/Footer";
+import ResultadoConsulta from "@/components/checkStatus/QueryResult";
+import ConsultaPorNumero from "@/components/checkStatus/QueryByNumber";
+import ConsultaPorDocumento from "@/components/checkStatus/QueryByDocument";
 
 export default function ConsultarEstadoPage() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-indigo-50">
       {/* Header */}
       <header className="bg-blue-600 text-white sticky top-0 z-10">
         <div className="container mx-auto px-4 py-3 flex items-center">
@@ -48,7 +48,6 @@ export default function ConsultarEstadoPage() {
             </TabsContent>
           </Tabs>
 
-      
           <ResultadoConsulta />
         </div>
       </main>
@@ -56,5 +55,5 @@ export default function ConsultarEstadoPage() {
       {/* Footer */}
       <Footer />
     </div>
-  )
+  );
 }

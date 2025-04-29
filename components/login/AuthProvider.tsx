@@ -1,5 +1,5 @@
-// AuthProvider.tsx
 "use client"
+// uwu
 
 import { createContext, useContext, useState, ReactNode } from "react"
 
@@ -30,10 +30,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (cedula: string, password?: string) => {
     try {
       // Paso 1: Consultar si el usuario existe
-      const res = await fetch("http://127.0.0.1:8000/login", {
+      const res = await fetch("http://127.0.0.1:8000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cedula }),
+        body: JSON.stringify({ nombre: cedula }),  // Enviar cédula como nombre de usuario
       })
 
       const data = await res.json()
@@ -42,30 +42,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const rol = data.rol
 
         if (rol === "paciente") {
-          // Paciente: solo con cédula
+          // Paciente: solo con cédula (no se requiere contraseña)
           setUser({ cedula, rol })
           alert("Sesión iniciada correctamente")
         } else if ((rol === "admin" || rol === "asesor") && password) {
           // Admin o Asesor: necesita validar contraseña
-          const resPass = await fetch("http://127.0.0.1:8000/validar_password", {
+          const resPass = await fetch("http://127.0.0.1:8000/auth/validar_password", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ cedula, password }),
+            body: JSON.stringify({ nombre: cedula, contraseña: password }),
           })
           const tokenData = await resPass.json()
 
           if (resPass.ok) {
+            // Guardar el token recibido en localStorage
             localStorage.setItem("token", tokenData.token)
             setUser({ cedula, rol })
             alert("Sesión iniciada correctamente")
           } else {
-            alert(tokenData.message || "Contraseña incorrecta")
+            alert(tokenData.error || "Contraseña incorrecta")
           }
         } else {
           alert("Se requiere contraseña para este rol")
         }
       } else {
-        alert(data.message || "Usuario no encontrado")
+        alert(data.error || "Usuario no encontrado")
       }
     } catch (error) {
       console.error("Error de login:", error)

@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
-import Footer from "@/components/footer/Footer"
-import PatientForm from "@/components/requestAppointments/PatientForm"
-import ServiceSelection from "@/components/requestAppointments/ServiceSelection"
-import WaitTimes from "@/components/requestAppointments/WaitTimes"
+import Footer from "@/components/footer/Footer";
+import PatientForm from "@/components/requestAppointments/PatientForm";
+import ServiceSelection from "@/components/requestAppointments/ServiceSelection";
+import WaitTimes from "@/components/requestAppointments/WaitTimes";
 
 export default function SolicitarTurno() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-indigo-50">
       {/* Header */}
       <header className="bg-blue-600 text-white sticky top-0 z-10">
         <div className="container mx-auto px-4 py-3 flex items-center">
@@ -40,5 +40,5 @@ export default function SolicitarTurno() {
 
       <Footer />
     </div>
-  )
+  );
 }
