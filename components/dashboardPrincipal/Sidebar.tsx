@@ -71,11 +71,11 @@ interface SidebarProps {
 export const Sidebar = ({ activeLink }: SidebarProps) => {
   const navLinks: NavLinkItem[] = [
     { href: "/admin", icon: <LayoutDashboard />, label: "Dashboard" },
-    { href: "/usuarios", icon: <Users />, label: "Gestión de Usuarios" },
-    { href: "/operadores", icon: <UserCircle2 />, label: "Gestión de Operadores" },
+    { href: "/admin/usuarios", icon: <Users />, label: "Gestión de Usuarios" },
+    { href: "/admin/operadores", icon: <UserCircle2 />, label: "Gestión de Asesores" },
     { href: "/turnos", icon: <FileText />, label: "Gestión de Turnos" },
     { href: "/estadisticas", icon: <BarChart3 />, label: "Estadísticas" },
-    { href: "/especialidades", icon: <Stethoscope />, label: "Especialidades" },
+    //{ href: "/especialidades", icon: <Stethoscope />, label: "Especialidades" },
     { href: "/anuncios", icon: <MessageSquare />, label: "Anuncios" },
     { href: "/configuracion", icon: <Settings />, label: "Configuración" },
   ];

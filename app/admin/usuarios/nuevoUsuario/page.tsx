@@ -1,3 +1,6 @@
+"use client"
+
+import { useState } from "react"
 import Link from "next/link"
 import { ArrowLeft, Bell, Calendar, Menu, Save, X } from "lucide-react"
 
@@ -6,11 +9,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import PersonalInfoForm from "@/components/formUsers/PersonalInfoForm"
 import AccessSecurityForm from "@/components/formUsers/AccessSecurityForm"
-import PermissionsForm from "@/components/formUsers/PermissionsForm"
+// import PermissionsForm from "@/components/formUsers/PermissionsForm"
 
 import { AdminLayout } from "@/components/dashboardPrincipal/layout"
 
 export default function NuevoUsuario() {
+  const [activeTab, setActiveTab] = useState<"informacion" | "acceso">("informacion")
+
   return (
     <AdminLayout
       activeLink="/admin/usuarios"
@@ -25,24 +30,20 @@ export default function NuevoUsuario() {
           </p>
         </div>
 
-        <Tabs defaultValue="informacion" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "informacion" | "acceso")} className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="informacion">Información Personal</TabsTrigger>
             <TabsTrigger value="acceso">Acceso y Seguridad</TabsTrigger>
-            <TabsTrigger value="permisos">Permisos</TabsTrigger>
           </TabsList>
 
           <TabsContent value="informacion" className="mt-4">
-            <PersonalInfoForm />
+            <PersonalInfoForm onNext={() => setActiveTab("acceso")} />
           </TabsContent>
 
           <TabsContent value="acceso" className="mt-4">
-            <AccessSecurityForm />
+            <AccessSecurityForm onBack={() => setActiveTab("informacion")} onSave={() => alert("Formulario guardado")} />
           </TabsContent>
 
-          <TabsContent value="permisos" className="mt-4">
-            <PermissionsForm />
-          </TabsContent>
         </Tabs>
       </div>
     </AdminLayout>

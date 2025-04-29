@@ -15,26 +15,9 @@ export default function PatientForm() {
         <CardDescription>Ingrese sus datos para generar su turno</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="nombre">Nombre</Label>
-            <Input id="nombre" placeholder="Ingrese su nombre" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="apellido">Apellido</Label>
-            <Input id="apellido" placeholder="Ingrese su apellido" />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="documento">Documento de Identidad</Label>
-            <Input id="documento" placeholder="Ingrese su documento" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="telefono">Teléfono</Label>
-            <Input id="telefono" placeholder="Ingrese su teléfono" />
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="documento">Documento de Identidad</Label>
+          <Input id="documento" placeholder="Ingrese su documento" />
         </div>
 
         <Separator />

@@ -1,27 +1,25 @@
-"use client"
+// components/public/MobileAccessCard.tsx
+import { Phone } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import Image from "next/image"
-
-export default function AnnouncementsCard() {
+export default function MobileAccessCard() {
   return (
-    <Card>
+    <Card className="mt-4">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">Anuncios</CardTitle>
+        <CardTitle className="text-lg">Acceso Móvil</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {[1, 2].map((_, i) => (
-          <div key={i} className="border rounded-lg p-2 hover:shadow-md transition-shadow">
-            <Image
-              src="/placeholder.svg?height=150&width=300"
-              alt={`Anuncio ${i + 1}`}
-              width={300}
-              height={150}
-              className="rounded-md w-full h-auto bg-orange-500 p-4"
-            />
+      <CardContent>
+        <div className="text-center p-4 border rounded-lg bg-muted/30">
+          <div className="mb-3">
+            <Phone className="h-8 w-8 mx-auto text-blue-600" />
           </div>
-        ))}
+          <p className="text-sm mb-3">Consulte el estado de su turno desde su teléfono móvil</p>
+          <Button size="sm" variant="outline" className="w-full">
+            Escanear QR
+          </Button>
+        </div>
       </CardContent>
     </Card>
-  )
+  );
 }

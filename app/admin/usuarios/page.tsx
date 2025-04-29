@@ -76,7 +76,7 @@ export default function GestionUsuarios() {
             </p>
           </div>
           
-          <Link href="/admin/usuarios/nuevo" legacyBehavior>
+          <Link href="/admin/usuarios/nuevoUsuario" legacyBehavior>
             <Button className="gap-2">
               <UserPlus className="h-4 w-4" />
               <span>Nuevo Usuario</span>

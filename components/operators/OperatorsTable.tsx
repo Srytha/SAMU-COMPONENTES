@@ -1,41 +1,39 @@
-import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { OperatorRow, type Operator } from "./OperatorsRow"; // Importa la interfaz
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+  TableCell,
+} from "@/components/ui/table";
+import { OperatorRow, type Operator } from "./OperatorsRow";
 
-/*
-
-Bueno, en esta se recibe un arreglo de objetos tipo Operator. 
-Cada objeto representa a un operador con su nombre, módulo, turno y etc
-
-EsTA Cosa practicamente es donde se contiene la tabla y ya
-solo se encarga de mostrar los encabezados y recorrer los datos
-para que cada operador tenga su fila
-
-LA LOgica de como se muestra cada operador esta en el componente 
-ese operatorRow
-
-
-*/
 interface OperatorsTableProps {
   operators: Operator[];
 }
 
-export const OperatorsTable = ({ operators }: OperatorsTableProps) => (
-  <Table>
-    <TableHeader>
-      <TableRow>
-        <TableHead>Operador</TableHead>
-        <TableHead>Módulo</TableHead>
-        <TableHead>Especialidad</TableHead>
-        <TableHead>Estado</TableHead>
-        <TableHead>Turno</TableHead>
-        <TableHead>Pacientes Atendidos</TableHead>
-        <TableHead className="text-right">Acciones</TableHead>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      {operators.map((operator) => (
-        <OperatorRow key={operator.id} operator={operator} />
-      ))}
-    </TableBody>
-  </Table>
-);
+export const OperatorsTable = ({ operators }: OperatorsTableProps) => {
+  return (
+    <div className="rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
+      <Table className="min-w-full text-sm text-left">
+        <TableHeader className="bg-gray-100">
+          <TableRow>
+            <TableHead className="px-6 py-3 font-semibold text-gray-700">Operador</TableHead>
+            <TableHead className="px-6 py-3 font-semibold text-gray-700">Módulo</TableHead>
+            <TableHead className="px-6 py-3 font-semibold text-gray-700">Especialidad</TableHead>
+            <TableHead className="px-6 py-3 font-semibold text-gray-700">Estado</TableHead>
+            <TableHead className="px-6 py-3 font-semibold text-gray-700">Turno</TableHead>
+            <TableHead className="px-6 py-3 font-semibold text-gray-700">Pacientes Atendidos</TableHead>
+            <TableHead className="px-6 py-3 text-right font-semibold text-gray-700">Acciones</TableHead>
+          </TableRow>
+        </TableHeader>
+
+        <TableBody className="divide-y divide-gray-200">
+          {operators.map((operator) => (
+            <OperatorRow key={operator.id} operator={operator} />
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};

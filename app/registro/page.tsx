@@ -24,7 +24,7 @@ export default function RegistroPage() {
               <ArrowLeft className="h-4 w-4" />
               Volver al inicio
             </Link>
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">Registro</h1>
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">Registro - Pacientes</h1>
             <p className="text-muted-foreground">Complete el formulario para registrarse en el sistema</p>
           </div>
 

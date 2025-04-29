@@ -10,7 +10,7 @@ export default function AnnouncementsCard() {
         <CardTitle className="text-lg">Anuncios</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {[1, 2].map((_, i) => (
+        {[2].map((_, i) => (
           <div key={i} className="border rounded-lg p-2 hover:shadow-md transition-shadow">
             <Image
               src="/placeholder.svg?height=150&width=300"
