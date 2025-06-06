@@ -56,6 +56,30 @@ export default function RegistroForm() {
           </div>
         </div>
 
+        {/* Nuevo campo de contraseña */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="password">Contraseña</Label>
+            <Input 
+              id="password" 
+              placeholder="Cree una contraseña segura" 
+              type="password" 
+              minLength={8}
+            />
+            <p className="text-xs text-muted-foreground">
+              Mínimo 8 caracteres (letras, números y símbolos)
+            </p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
+            <Input 
+              id="confirmPassword" 
+              placeholder="Repita su contraseña" 
+              type="password" 
+            />
+          </div>
+        </div>
+
         <div className="space-y-2">
           <Label htmlFor="discapacidad">Condición Prioritaria (opcional)</Label>
           <Select>

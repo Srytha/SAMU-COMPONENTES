@@ -24,10 +24,11 @@ export default function SolicitarTurno() {
         <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
           <div className="max-w-2xl mx-auto">
             <div className="mb-6">
-              <Link href="/" className="text-blue-600 hover:underline flex items-center gap-1 mb-4">
-                <ArrowLeft className="h-4 w-4" />
-                Volver al inicio
-              </Link>
+              <Link href="/vistaPaciente" className="text-blue-600 hover:underline flex items-center gap-1 mb-4">
+  <ArrowLeft className="h-4 w-4" />
+  Volver al panel principal
+</Link>
+
               <h1 className="text-2xl md:text-3xl font-bold mb-2">Solicitar Turno</h1>
               <p className="text-muted-foreground">Complete el formulario para obtener su ticket digital</p>
             </div>
