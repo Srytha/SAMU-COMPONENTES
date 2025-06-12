@@ -5,7 +5,7 @@ import { AuthProvider } from "@/components/login/AuthProvider";
 export const metadata: Metadata = {
   title: 'SAMU',
   icons: {
-    icon: '/favicon.ico', // Esto apunta al archivo que colocaste en /public
+    icon: '/favicon.ico', 
   },
 };
 
