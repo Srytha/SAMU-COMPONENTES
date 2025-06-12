@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableBody,
@@ -5,16 +7,23 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { UserRow } from "./UserRow"
-import type { User } from "@/types/user"
+} from "@/components/ui/table";
+import { UserRow } from "./AsesorRow";
+
+type User = {
+  id: string;
+  fullName: string;
+  document: string;
+  phone: string;
+  email: string;
+};
 
 type UserTableProps = {
-  users: User[]
-  onDelete: (userId: string) => void
-  onEdit: (userId: string) => void
-  onViewDetails: (userId: string) => void
-}
+  users: User[];
+  onDelete: (userId: string) => void;
+  onEdit: (userId: string) => void;
+  onViewDetails: (userId: string) => void;
+};
 
 export const UserTable = ({
   users,
@@ -27,11 +36,10 @@ export const UserTable = ({
       <Table className="min-w-full text-sm text-left">
         <TableHeader className="bg-gray-100">
           <TableRow>
-            <TableHead className="px-6 py-3 font-semibold text-gray-700">Usuario</TableHead>
-            <TableHead className="px-6 py-3 font-semibold text-gray-700">Rol</TableHead>
+            <TableHead className="px-6 py-3 font-semibold text-gray-700">Asesor</TableHead>
+            <TableHead className="px-6 py-3 font-semibold text-gray-700">Documento</TableHead>
+            <TableHead className="px-6 py-3 font-semibold text-gray-700">Teléfono</TableHead>
             <TableHead className="px-6 py-3 font-semibold text-gray-700">Email</TableHead>
-            <TableHead className="px-6 py-3 font-semibold text-gray-700">Estado</TableHead>
-            <TableHead className="px-6 py-3 font-semibold text-gray-700">Fecha Registro</TableHead>
             <TableHead className="px-6 py-3 text-right font-semibold text-gray-700">Acciones</TableHead>
           </TableRow>
         </TableHeader>
@@ -42,12 +50,10 @@ export const UserTable = ({
               key={user.id}
               user={user}
               onDelete={onDelete}
-              onEdit={onEdit}
-              onViewDetails={onViewDetails}
             />
           ))}
         </TableBody>
       </Table>
     </div>
-  )
-}
+  );
+};

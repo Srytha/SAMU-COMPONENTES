@@ -70,20 +70,20 @@ interface SidebarProps {
 // Componente Principal
 export const Sidebar = ({ activeLink }: SidebarProps) => {
   const navLinks: NavLinkItem[] = [
-    { href: "/admin", icon: <LayoutDashboard />, label: "Dashboard" },
-    { href: "/admin/usuarios", icon: <Users />, label: "Gestión de Usuarios" },
-    { href: "/admin/operadores", icon: <UserCircle2 />, label: "Gestión de Asesores" },
-    { href: "/turnos", icon: <FileText />, label: "Gestión de Turnos" },
-    { href: "/estadisticas", icon: <BarChart3 />, label: "Estadísticas" },
+    //{ href: "/admin", icon: <LayoutDashboard />, label: "Dashboard" },
+    { href: "/admin", icon: <Users />, label: "Gestión de Asesores" },
+    //{ href: "/admin/operadores", icon: <UserCircle2 />, label: "Gestión de Asesores (Muere)" },
+    //{ href: "/turnos", icon: <FileText />, label: "Gestión de Turnos" },
+    { href: "/admin/estadisticas", icon: <BarChart3 />, label: "Estadísticas" },
     //{ href: "/especialidades", icon: <Stethoscope />, label: "Especialidades" },
-    { href: "/anuncios", icon: <MessageSquare />, label: "Anuncios" },
-    { href: "/configuracion", icon: <Settings />, label: "Configuración" },
+    { href: "/admin/anuncios", icon: <MessageSquare />, label: "Anuncios" },
+    //{ href: "/configuracion", icon: <Settings />, label: "Configuración" },
   ];
 
   return (
     <aside className="hidden md:flex w-64 flex-col bg-blue-900 text-white">
       <div className="p-4 border-b border-blue-800">
-        <div className="font-bold text-xl">SAMU Admin</div>
+        <div className="font-bold text-xl">SAMU ADMINISTRACIÓN</div>
         <div className="text-xs text-blue-300">Sistema de Gestión</div>
       </div>
 

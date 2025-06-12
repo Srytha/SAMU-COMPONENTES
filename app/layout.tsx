@@ -1,15 +1,18 @@
-import type { Metadata } from 'next'
-import './globals.css'
+import type { Metadata } from 'next';
+import './globals.css';
 import { AuthProvider } from "@/components/login/AuthProvider";
 
 export const metadata: Metadata = {
-  title: 'SAMU'
-}
+  title: 'SAMU',
+  icons: {
+    icon: '/favicon.ico', // Esto apunta al archivo que colocaste en /public
+  },
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -19,5 +22,5 @@ export default function RootLayout({
         </AuthProvider>
       </body>
     </html>
-  )
+  );
 }
