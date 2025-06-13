@@ -41,19 +41,22 @@ export default function RegistroForm() {
       return;
     }
     try {
+      const payload = {
+        cedula: formData.cedula,
+        nombre: formData.nombre,
+        edad: formData.edad,
+        sexo: formData.sexo,
+        celular: formData.celular,
+        correo: formData.correo,
+        password: formData.password,
+        // El cambio xd
+        ...(formData.discapacidad && { discapacidad: formData.discapacidad }),
+      };
+
       const res = await fetch("https://desarrollouv.dismatexco.com/auth/registro", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          cedula: formData.cedula,
-          nombre: formData.nombre,
-          edad: formData.edad,
-          sexo: formData.sexo,
-          celular: formData.celular,
-          correo: formData.correo,
-          password: formData.password,
-          discapacidad: formData.discapacidad,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -71,6 +74,9 @@ export default function RegistroForm() {
       }
     }
   };
+
+
+// Finalizacion de la conexion
 
   return (
     <Card>
@@ -189,7 +195,6 @@ export default function RegistroForm() {
               <SelectValue placeholder="Seleccione una condición" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Ninguno">Ninguno</SelectItem>
               <SelectItem value="adulto de la tercera edad">Adulto de la tercera edad</SelectItem>
               <SelectItem value="discapacidad fisica permanente">Discapacidad física permanente</SelectItem>
               <SelectItem value="discapacidad mental permanente">Discapacidad mental permanente</SelectItem>
@@ -220,8 +225,7 @@ export default function RegistroForm() {
             <Button onClick={handleSubmit}>Registrar</Button>
           </>
         ) : (
-          //Corregir pa que vaya a inicio :)
-          <Button onClick={() => router.push("/inicio")}> 
+          <Button onClick={() => router.push("/login")}>
             Ir a Inicio
           </Button>
         )}
