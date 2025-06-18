@@ -36,16 +36,18 @@ const VistaPaciente = () => {
         {/* Action Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
           
-          {/* Cambiar Punto */}
+          {/* Cambiar Punto - Actualizado con Link */}
           <div className="bg-white border-2 border-gray-200 rounded-xl p-8 text-center transition-all hover:border-blue-500 hover:shadow-lg cursor-pointer">
             <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-2xl text-white mx-auto mb-5">
-              📍
+             📍
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-3">Cambiar Punto</h3>
             <p className="text-gray-600 text-sm mb-6">Modifica tu punto de atención actual</p>
-            <button className="bg-blue-500 text-white px-6 py-2 rounded-md font-medium hover:bg-blue-600 transition-colors">
-              Cambiar
-            </button>
+            <Link href="/vistaPaciente/cambiarPunto">
+              <button className="bg-blue-500 text-white px-6 py-2 rounded-md font-medium hover:bg-blue-600 transition-colors">
+               Cambiar
+              </button>
+            </Link>
           </div>
 
           {/* Solicitar Turno */}
@@ -69,9 +71,11 @@ const VistaPaciente = () => {
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-3">Cancelar Turno</h3>
             <p className="text-gray-600 text-sm mb-6">Cancela tu cita programada</p>
-            <button className="bg-red-500 text-white px-6 py-2 rounded-md font-medium hover:bg-red-600 transition-colors">
-              Cancelar
-            </button>
+            <Link href="/vistaPaciente/cancelarTurno">
+              <button className="bg-red-500 text-white px-6 py-2 rounded-md font-medium hover:bg-red-600 transition-colors">
+                Cancelar
+              </button>
+            </Link>
           </div>
         </div>
       </main>
