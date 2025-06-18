@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, AlertTriangle, Check, X } from "lucide-react";
 import { AuthProvider } from "@/components/login/AuthProvider";
 import Footer from "@/components/footer/Footer";
+import { Badge } from '@/components/ui/badge';
 
 export default function CancelarTurno() {
   const [codigoTurno, setCodigoTurno] = useState("");
@@ -84,13 +85,20 @@ export default function CancelarTurno() {
     <AuthProvider>
       <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-indigo-50">
         {/* Header */}
-        <header className="bg-blue-600 text-white sticky top-0 z-10">
-          <div className="container mx-auto px-4 py-3 flex items-center">
-            <Link href="/" className="font-bold text-xl">
-              SAMU
-            </Link>
-          </div>
-        </header>
+         <header className="bg-blue-600 text-white sticky top-0 z-10 shadow-md py-3">
+      <div className="container mx-auto px-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-xl">SAMU</span>
+          <Badge
+            variant="outline"
+            className="text-xs font-normal border-blue-400 text-blue-100"
+          >
+            Sistema de Atención
+          </Badge>
+        </div>
+      </div>
+    </header>
+        
 
         {/* Main Content */}
         <main className="flex-1 container mx-auto px-4 py-6 md:py-10">

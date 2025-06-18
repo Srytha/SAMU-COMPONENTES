@@ -10,6 +10,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { Badge } from '@/components/ui/badge';
 
 
 export default function LoginContent() {
@@ -48,16 +49,19 @@ export default function LoginContent() {
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-indigo-50">
       
       {/*  Encabezado */}
-      <header className="bg-blue-600 text-white sticky top-0 z-10 shadow-md py-4">
-        <div className="container mx-auto px-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-2xl">SAMU</span>
-            <span className="text-sm border border-white/40 rounded-full px-6 py-2 bg-white/10">
-              Sistema de Atención
-            </span>
-          </div>
+    <header className="bg-blue-600 text-white sticky top-0 z-10 shadow-md py-3">
+      <div className="container mx-auto px-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-xl">SAMU</span>
+          <Badge
+            variant="outline"
+            className="text-xs font-normal border-blue-400 text-blue-100"
+          >
+            Sistema de Atención
+          </Badge>
         </div>
-      </header>
+      </div>
+    </header>
 
       {/* Contenido principal */}
       <main className="flex-1 flex items-center justify-center px-4 py-16">

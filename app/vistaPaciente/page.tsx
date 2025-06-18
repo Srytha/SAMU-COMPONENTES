@@ -3,20 +3,27 @@
 import Link from 'next/link';
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
+import AppFooter from "@/components/vistaGeneral/AppFooter";
+import { Badge } from '@/components/ui/badge';
 
 const VistaPaciente = () => {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
       
       {/* Header */}
-      <header className="bg-blue-500 py-4 shadow-md">
-        <div className="max-w-6xl mx-auto px-5 flex justify-between items-center">
-          <div className="text-white text-xl font-semibold">Sistema de Atención</div>
-          <div className="bg-white text-blue-500 px-5 py-2 rounded-full text-sm font-medium">
-            SAMU
-          </div>
+       <header className="bg-blue-600 text-white sticky top-0 z-10 shadow-md py-3">
+      <div className="container mx-auto px-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-xl">SAMU</span>
+          <Badge
+            variant="outline"
+            className="text-xs font-normal border-blue-400 text-blue-100"
+          >
+            Sistema de Atención
+          </Badge>
         </div>
-      </header>
+      </div>
+    </header>
 
       {/* Volver al inicio */}
       <div className="max-w-5xl mx-auto px-5 pt-8">
@@ -79,6 +86,7 @@ const VistaPaciente = () => {
           </div>
         </div>
       </main>
+      <AppFooter/>
     </div>
   );
 };

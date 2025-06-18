@@ -12,7 +12,6 @@ type PersonalInfoFormProps = {
 
 export default function PersonalInfoForm({ onNext }: PersonalInfoFormProps) {
   const handleSave = () => {
-    // Aquí puedes agregar lógica de validación o envío
     console.log("Formulario guardado");
     if (onNext) onNext();
   };
@@ -61,6 +60,19 @@ export default function PersonalInfoForm({ onNext }: PersonalInfoFormProps) {
           <div className="space-y-2">
             <Label htmlFor="edad">Edad</Label>
             <Input id="edad" type="number" placeholder="Ingrese la edad" min={1} max={100} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="puntoAtencion">Punto de Atención</Label>
+            <Select>
+              <SelectTrigger id="puntoAtencion">
+                <SelectValue placeholder="Seleccione el punto" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="centro">Centro</SelectItem>
+                <SelectItem value="sur">Sur</SelectItem>
+                <SelectItem value="norte">Norte</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Contraseña */}

@@ -104,14 +104,14 @@ export default function AnnouncementsPage() {
   };
 
   const handleDelete = (id: number) => {
-    if (!window.confirm('¿Estás seguro de que quieres eliminar esta imagen?')) return;
+    if (!window.confirm('¿Estás seguro de que quieres eliminar esta anuncio?')) return;
 
     setIsLoading(prev => ({ ...prev, delete: true }));
     setTimeout(() => {
       const imgToDelete = images.find(img => img.id === id);
       if (imgToDelete) URL.revokeObjectURL(imgToDelete.url);
       setImages(prev => prev.filter(img => img.id !== id));
-      setSuccess('Imagen eliminada exitosamente');
+      setSuccess('Anuncio eliminado exitosamente');
 
       setTimeout(() => setSuccess(null), 5000);
 
@@ -200,7 +200,7 @@ export default function AnnouncementsPage() {
                 isLoading.submit ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
               }`}
             >
-              {isLoading.submit ? 'Subiendo...' : 'Subir Imagen'}
+              {isLoading.submit ? 'Subiendo...' : 'Subir Anuncio'}
             </button>
           </form>
 
@@ -220,7 +220,7 @@ export default function AnnouncementsPage() {
                 ))}
               </div>
             ) : images.length === 0 ? (
-              <p className="text-center text-gray-500">No hay imágenes subidas</p>
+              <p className="text-center text-gray-500">No hay anuncios subidos</p>
             ) : (
               <div className="space-y-4">
                 {images.map(img => (

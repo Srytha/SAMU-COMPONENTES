@@ -2,6 +2,8 @@
 
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
+import AppFooter from "@/components/vistaGeneral/AppFooter";
+import { Badge } from '@/components/ui/badge';
 
 import RegistroForm from "@/components/registro/RegistroForm"
 import Footer from "@/components/footer/Footer"
@@ -10,11 +12,19 @@ export default function RegistroPage() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="bg-blue-600 text-white sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-3 flex items-center">
-          <Link href="/" className="font-bold text-xl">SAMU</Link>
+      <header className="bg-blue-600 text-white sticky top-0 z-10 shadow-md py-3">
+      <div className="container mx-auto px-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-xl">SAMU</span>
+          <Badge
+            variant="outline"
+            className="text-xs font-normal border-blue-400 text-blue-100"
+          >
+            Sistema de Atención
+          </Badge>
         </div>
-      </header>
+      </div>
+    </header>  
 
       {/* Main */}
       <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
@@ -32,7 +42,8 @@ export default function RegistroPage() {
         </div>
       </main>
 
-      <Footer />
+     
+     <AppFooter />
     </div>
   )
 }
