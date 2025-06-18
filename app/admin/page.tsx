@@ -1,117 +1,93 @@
-import React from "react";
+'use client';
+import { useState } from 'react';
+import Link from 'next/link';
+import { AdminLayout } from "@/components/dashboardPrincipal/layout";
+import { UsersFilter } from '@/components/asesor/AsesorFilter';
+import { UserTable } from '@/components/asesor/AsesorTable';
+import { Button } from '@/components/ui/button';
+import { UserPlus } from 'lucide-react';
 
-// Importación de componentes principales del dashboard
-import { Sidebar } from "@/components/dashboardPrincipal/Sidebar";
-import { Header } from "@/components/dashboardPrincipal/Header";
-import { StatsCard } from "@/components/dashboardPrincipal/StatsCard";
-import { TurnsList } from "@/components/dashboardPrincipal/TurnsList";
-import { DailyStats } from "@/components/dashboardPrincipal/DailyStats";
+type SimpleUser = {
+  id: string;
+  fullName: string;
+  document: string;
+  phone: string;
+  email: string;
+};
 
-//  Importación de componentes UI reutilizables
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Clock, Bell } from "lucide-react";
+const mockUsers: SimpleUser[] = [
+  {
+    id: '001',
+    fullName: 'Juan Díaz',
+    document: '12345678',
+    phone: '3001234567',
+    email: 'juan.diaz@ejemplo.com',
+  },
+  {
+    id: '002',
+    fullName: 'María López',
+    document: '87654321',
+    phone: '3107654321',
+    email: 'maria.lopez@ejemplo.com',
+  },
+];
 
-//  Componente principal del Panel de Administración
-export default function AdminDashboard() {
+export default function GestionUsuarios() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [users, setUsers] = useState<SimpleUser[]>(mockUsers);
+
+  const filteredUsers = users.filter(user => {
+    const lowerSearch = searchTerm.toLowerCase();
+    return (
+      user.fullName.toLowerCase().includes(lowerSearch) ||
+      user.email.toLowerCase().includes(lowerSearch) ||
+      user.document.includes(searchTerm) ||
+      user.phone.includes(searchTerm)
+    );
+  });
+
+  const handleDeleteUser = (userId: string) => {
+    setUsers(prev => prev.filter(user => user.id !== userId));
+  };
+
+  const handleExport = (format: 'excel' | 'csv' | 'pdf') => {
+    console.log('Iniciando exportación a:', format);
+  };
+
   return (
-    <div className="min-h-screen flex">
-      {/* Barra lateral de navegación */}
-      <Sidebar activeLink="/admin" />
-
-      <div className="flex-1 flex flex-col">
-        {/*  Encabezado del panel */}
-        <Header title="Panel de Administración" />
-
-        {/*  Contenido principal */}
-        <main className="flex-1 p-4 md:p-6 bg-muted/20">
-          <div className="grid gap-6">
-
-            {/* Sección Superior: título + botones */}
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold">Dashboard</h2>
-                <p className="text-muted-foreground">
-                  Gestión de turnos y estadísticas
-                </p>
-              </div>
-
-              {/*  Botones de acciones rápidas */}
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm">
-                  <Clock className="h-4 w-4 mr-2" />
-                  Hoy
-                </Button>
-                <Button size="sm">
-                  <Bell className="h-4 w-4 mr-2" />
-                  Llamar Siguiente
-                </Button>
-              </div>
-            </div>
-
-            {/* Sección de tarjetas de estadísticas */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              <StatsCard
-                title="Total de Turnos"
-                value="124"
-                percentage="+12% respecto a ayer"
-                progress={65}
-              />
-              <StatsCard
-                title="Atendidos"
-                value="87"
-                percentage="70% del total"
-                progress={70}
-              />
-              <StatsCard
-                title="En Espera"
-                value="37"
-                percentage="30% del total"
-                progress={30}
-              />
-              <StatsCard
-                title="Tiempo Promedio"
-                value="12 min"
-                percentage="-2 min respecto a ayer"
-                progress={40}
-              />
-            </div>
-
-            {/* Sección Inferior: turnos en tiempo real y estadísticas diarias */}
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Turnos Actuales</CardTitle>
-                  <CardDescription>
-                    Gestión de turnos en tiempo real
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <TurnsList />
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Estadísticas del Día</CardTitle>
-                  <CardDescription>
-                    Distribución de turnos por servicio
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <DailyStats />
-                </CardContent>
-              </Card>
-            </div>
+    <AdminLayout activeLink="usuarios" title="Gestión de Asesores">
+      <div className="space-y-6 p-4 md:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold text-gray-900">Asesores</h1>
+            <p className="text-sm text-gray-500">
+              Administra los asesores registrados en el sistema
+            </p>
           </div>
-        </main>
+
+          <Link href="/admin/nuevoAsesor" legacyBehavior>
+            <Button className="gap-2">
+              <UserPlus className="h-4 w-4" />
+              <span>Nuevo Asesor</span>
+            </Button>
+          </Link>
+        </div>
+
+        <UsersFilter
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          onExport={handleExport}
+        />
+
+        <div className="rounded-md border bg-white shadow-sm">
+          <UserTable
+            users={filteredUsers}
+            onDelete={handleDeleteUser}
+            onEdit={(id) => console.log('Editar:', id)}
+            onViewDetails={(id) => console.log('Ver detalles:', id)}
+          />
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

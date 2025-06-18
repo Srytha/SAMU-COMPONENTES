@@ -26,16 +26,8 @@ const WelcomeSection = () => {
           Gestione sus turnos de manera rápida y eficiente
         </p>
         
-        {/* Action Buttons */}
+       {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button
-            size="lg"
-            className="bg-[#3f6ad8] hover:bg-[#2a56c6] text-white font-semibold px-6 py-2 transition-all duration-300 shadow-lg hover:shadow-xl"
-            onClick={handleNavigation("/solicitarTurno")}
-            aria-label="Solicitar un nuevo turno"
-          >
-            Solicitar Turno
-          </Button>
           
           <Button
             size="lg"

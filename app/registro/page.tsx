@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 
-import RegistroForm from "@/components/record/RegistroForm"
+import RegistroForm from "@/components/registro/RegistroForm"
 import Footer from "@/components/footer/Footer"
 
 export default function RegistroPage() {
