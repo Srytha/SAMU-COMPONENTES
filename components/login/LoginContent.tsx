@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import Link from "next/link";
-import { ArrowLeft, User, AlertCircle } from "lucide-react";
+import { ArrowLeft, User, Lock, AlertCircle } from "lucide-react";
 
 import { useAuth } from "@/components/login/AuthProvider";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 export default function LoginContent() {
   const { login } = useAuth();
   const [cedula, setCedula] = useState("");
+  const [password, setPassword] = useState(""); // Nuevo estado para contraseña
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,7 +31,7 @@ export default function LoginContent() {
       setIsLoading(true);
       // Simulando un retraso en la red pa q se vea cool
       await new Promise(resolve => setTimeout(resolve, 800));
-      login(cedula);
+      login(cedula, password); // Pasar también la contraseña
       setIsLoading(false);
     } catch (err) {
       setError("Ocurrió un error al iniciar sesión.");
@@ -77,7 +78,7 @@ export default function LoginContent() {
                   Iniciar Sesión
                 </CardTitle>
                 <p className="text-lg text-gray-500">
-                  Ingrese su cédula para acceder al sistema
+                  Ingrese sus credenciales para acceder al sistema
                 </p>
               </CardHeader>
               
@@ -90,7 +91,7 @@ export default function LoginContent() {
                   </div>
                 )}
                 
-                {/* Campo de entrada */}
+                {/* Campo de cédula */}
                 <div className="space-y-3">
                   <Label htmlFor="cedula" className="text-lg text-gray-700">
                     Cédula de Identidad
@@ -115,6 +116,32 @@ export default function LoginContent() {
                   </div>
                   <p className="text-sm text-gray-500 mt-2">
                     Formato: 12345678-9 (sin puntos ni guiones)
+                  </p>
+                </div>
+
+                {/* Contraseña */}
+                <div className="space-y-3">
+                  <Label htmlFor="password" className="text-lg text-gray-700">
+                    Contraseña
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Ingrese su contraseña"
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        if (error) setError("");
+                      }}
+                      className="pl-12 py-3 border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-lg"
+                    />
+                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                      <Lock className="h-5 w-5" />
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-500 mt-2">
+                    *Requerida para administradores y asesores
                   </p>
                 </div>
               </CardContent>
