@@ -94,9 +94,8 @@ const Dashboard: React.FC = () => {
 
   const [rendimientoPuntos] = useState<PerformancePoint[]>([
     { punto_atencion: "Norte", total_turnos: 145, total_atendidos: 132, porcentaje_atendidos: 91.03 },
-    { punto_atencion: "Sur", total_turnos: 98, total_atendidos: 87, porcentaje_atendidos: 88.78 },
-    { punto_atencion: "Este", total_turnos: 89, total_atendidos: 76, porcentaje_atendidos: 85.39 },
-    { punto_atencion: "Oeste", total_turnos: 112, total_atendidos: 94, porcentaje_atendidos: 83.93 }
+    { punto_atencion: "Centro", total_turnos: 98, total_atendidos: 87, porcentaje_atendidos: 88.78 },
+    { punto_atencion: "Sur", total_turnos: 89, total_atendidos: 76, porcentaje_atendidos: 85.39 }
   ]);
 
   const tabs: TabItem[] = [

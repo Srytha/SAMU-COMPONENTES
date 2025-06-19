@@ -91,7 +91,7 @@ export default function AnnouncementsPage() {
       };
 
       setImages(prev => [newImage, ...prev]);
-      setSuccess('Imagen subida exitosamente');
+      setSuccess('anuncio subido exitosamente');
       setTimeout(() => setSuccess(null), 5000);
       setFormData({
         title: '',
