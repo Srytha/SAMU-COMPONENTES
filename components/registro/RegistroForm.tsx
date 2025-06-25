@@ -44,7 +44,7 @@ export default function RegistroForm() {
       const payload = {
         cedula: formData.cedula,
         nombre: formData.nombre,
-        edad: formData.edad,
+        edad: parseInt(formData.edad),
         sexo: formData.sexo,
         celular: formData.celular,
         correo: formData.correo,

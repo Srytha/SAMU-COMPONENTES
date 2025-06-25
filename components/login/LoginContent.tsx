@@ -3,6 +3,7 @@
 import { useState, FormEvent } from "react";
 import Link from "next/link";
 import { ArrowLeft, User, Lock, AlertCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/components/login/AuthProvider";
 import { Button } from "@/components/ui/button";
@@ -12,9 +13,8 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Badge } from '@/components/ui/badge';
 
-
 export default function LoginContent() {
-  // Contexto de autenticación
+  const router = useRouter();
   const { login } = useAuth();
 
   // Estados para manejar el formulario
@@ -23,45 +23,58 @@ export default function LoginContent() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // unción para manejar el envío del formulario
+  // Función para manejar el envío del formulario
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
 
+    // Validaciones
     if (cedula.trim() === "") {
       setError("Por favor, ingrese su cédula.");
       return;
     }
 
+    if (password.trim() === "") {
+      setError("Por favor, ingrese su contraseña.");
+      return;
+    }
+
     try {
       setIsLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 800)); // Simula un pequeño delay
-      login(cedula, password); // Intenta iniciar sesión
-      setIsLoading(false);
+      
+      const success = await login(cedula, password);
+      console.log("Resultado del login:", success);
+      if (success) {
+        // Redireccionar al dashboard o página principal
+        router.push("/vistaPaciente"); // Ajusta la ruta según tu aplicación
+      } else {
+        setError("Credenciales incorrectas. Verifique su cédula y contraseña.");
+      }
     } catch (err) {
-      setError("Ocurrió un error al iniciar sesión.");
+      console.error("Error en login:", err);
+      setError("Error de conexión con el servidor. Intente nuevamente.");
+    } finally {
       setIsLoading(false);
     }
   };
 
-  //  formulario de login
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-indigo-50">
       
-      {/*  Encabezado */}
-    <header className="bg-blue-600 text-white sticky top-0 z-10 shadow-md py-3">
-      <div className="container mx-auto px-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-xl">SAMU</span>
-          <Badge
-            variant="outline"
-            className="text-xs font-normal border-blue-400 text-blue-100"
-          >
-            Sistema de Atención
-          </Badge>
+      {/* Encabezado */}
+      <header className="bg-blue-600 text-white sticky top-0 z-10 shadow-md py-3">
+        <div className="container mx-auto px-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-xl">SAMU</span>
+            <Badge
+              variant="outline"
+              className="text-xs font-normal border-blue-400 text-blue-100"
+            >
+              Sistema de Atención
+            </Badge>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
 
       {/* Contenido principal */}
       <main className="flex-1 flex items-center justify-center px-4 py-16">
@@ -78,15 +91,13 @@ export default function LoginContent() {
 
           {/* Formulario de inicio de sesión */}
           <form onSubmit={handleLogin}>
-            <Card className="shadow-lg border-0">
+            <Card className="shadow-lg border-0 relative">
 
-  
               <div className="absolute -top-16 left-1/2 transform -translate-x-1/2">
                 <div className="bg-blue-600 h-20 w-20 rounded-full flex items-center justify-center shadow-md">
                   <User className="h-10 w-10 text-white" />
                 </div>
               </div>
-
 
               <CardHeader className="pt-10 text-center space-y-1">
                 <CardTitle className="text-3xl font-bold text-gray-800">
@@ -126,20 +137,21 @@ export default function LoginContent() {
                         "pl-12 py-3 border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-lg",
                         error && "border-red-300 focus:border-red-500 focus:ring-red-500"
                       )}
+                      disabled={isLoading}
                     />
                     <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
                       <User className="h-5 w-5" />
                     </div>
                   </div>
                   <p className="text-sm text-gray-500 mt-2">
-                    Formato: 12345678-9 (sin puntos ni guiones)
+                    Formato: 12345678 (sin puntos ni guiones)
                   </p>
                 </div>
 
-                {/* Campo de contraseña */}
+                {/* Campo de contraseña - OBLIGATORIO */}
                 <div className="space-y-3">
                   <Label htmlFor="password" className="text-lg text-gray-700">
-                    Contraseña
+                    Contraseña <span className="text-red-500">*</span>
                   </Label>
                   <div className="relative">
                     <Input
@@ -152,6 +164,8 @@ export default function LoginContent() {
                         if (error) setError("");
                       }}
                       className="pl-12 py-3 border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-lg"
+                      disabled={isLoading}
+                      required
                     />
                     <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
                       <Lock className="h-5 w-5" />
@@ -173,7 +187,7 @@ export default function LoginContent() {
                 </div>
               </CardContent>
 
-              {/*  Botones de acción */}
+              {/* Botones de acción */}
               <CardFooter className="flex flex-col gap-4 px-8 pb-8">
                 <div className="flex flex-col sm:flex-row gap-3 w-full justify-end">
                   
@@ -183,6 +197,7 @@ export default function LoginContent() {
                     variant="outline" 
                     onClick={() => window.history.back()}
                     className="border-gray-300 text-gray-700 hover:bg-gray-50 text-lg w-full sm:w-auto"
+                    disabled={isLoading}
                   >
                     Cancelar
                   </Button>
