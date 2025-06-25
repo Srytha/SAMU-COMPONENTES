@@ -1,20 +1,26 @@
 "use client"
-// uwu
 
-import { createContext, useContext, useState, ReactNode } from "react"
+import { createContext, useContext, useState, ReactNode, useEffect } from "react"
 
 interface User {
-  cedula: string
-  rol: string
+  id: number
+  nombre: string
+  puntoAtencion: string
+  cedula?: string
 }
 
 interface AuthContextType {
   user: User | null
-  login: (cedula: string, password?: string) => Promise<void>
+  login: (cedula: string, password: string) => Promise<boolean>
   logout: () => void
+  isLoading: boolean
+  checkAuthStatus: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+// Configuración de la API - USA LA MISMA BASE URL
+const API_BASE_URL = "https://desarrollouv.dismatexco.com/auth"
 
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext)
@@ -26,61 +32,96 @@ export const useAuth = (): AuthContextType => {
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const login = async (cedula: string, password?: string) => {
+  // Función para validar el token actual
+  const validateToken = async (token: string): Promise<User | null> => {
     try {
-      // Paso 1: Consultar si el usuario existe
-      const res = await fetch("http://127.0.0.1:8000/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre: cedula }),  // Enviar cédula como nombre de usuario
-      })
+      const headers = {
+        "Authorization": `Bearer ${token.trim()}`,
+        "Content-Type": "application/json"
+      };
 
-      const data = await res.json()
+      const res = await fetch(`${API_BASE_URL}/validar_token`, {
+        method: "GET",
+        headers
+      });
+
+      console.log("Respuesta validación token:", res.status);
 
       if (res.ok) {
-        const rol = data.rol
-
-        if (rol === "paciente") {
-          // Paciente: solo con cédula (no se requiere contraseña)
-          setUser({ cedula, rol })
-          alert("Sesión iniciada correctamente")
-        } else if ((rol === "admin" || rol === "asesor") && password) {
-          // Admin o Asesor: necesita validar contraseña
-          const resPass = await fetch("http://127.0.0.1:8000/auth/validar_password", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nombre: cedula, contraseña: password }),
-          })
-          const tokenData = await resPass.json()
-
-          if (resPass.ok) {
-            // Guardar el token recibido en localStorage
-            localStorage.setItem("token", tokenData.token)
-            setUser({ cedula, rol })
-            alert("Sesión iniciada correctamente")
-          } else {
-            alert(tokenData.error || "Contraseña incorrecta")
-          }
-        } else {
-          alert("Se requiere contraseña para este rol")
-        }
+        const data = await res.json();
+        console.log("Datos del usuario:", data);
+        return data.data;
       } else {
-        alert(data.error || "Usuario no encontrado")
+        console.log("Token inválido, eliminando...");
+        localStorage.removeItem("token");
+        return null;
       }
     } catch (error) {
-      console.error("Error de login:", error)
-      alert("Error de conexión con el servidor")
+      console.error("Error validando token:", error);
+      localStorage.removeItem("token");
+      return null;
     }
   }
 
+  // Función para verificar el estado de autenticación al cargar
+  const checkAuthStatus = async () => {
+    setIsLoading(true)
+    const token = localStorage.getItem("token")
+    
+    if (token) {
+      const userData = await validateToken(token)
+      setUser(userData)
+    }
+    
+    setIsLoading(false)
+  }
+
+  // Función de login actualizada
+  const login = async (cedula: string, password: string): Promise<boolean> => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cedula, password })
+      });
+
+      const data = await res.text(); // Cambiar de .json() a .text() porque devuelve string
+      console.log("Respuesta login:", res.status, data);
+
+      if (res.ok && data && data.trim() !== "") {
+        const cleanToken = data.trim().replace(/^"|"$/g, ""); // Elimina comillas al inicio y al final
+        localStorage.setItem("token", cleanToken);
+        console.log("Token limpio guardado en localStorage:", cleanToken);
+
+        const userData = await validateToken(cleanToken);
+        if (userData) {
+          setUser({ ...userData, cedula });
+        }
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error("Error de login:", error);
+      return false;
+    }
+  }
+
+  // Función de logout
   const logout = () => {
     localStorage.removeItem("token")
     setUser(null)
   }
 
+  // Verificar autenticación al montar el componente
+  useEffect(() => {
+    checkAuthStatus()
+  }, [])
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, isLoading, checkAuthStatus }}>
       {children}
     </AuthContext.Provider>
   )
