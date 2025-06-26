@@ -1,21 +1,59 @@
-import React from 'react';
-import { UserRequest } from '../../types/estadisticasTypes';
-
-interface UserRequestsChartProps {
-  data: UserRequest[];
-}
+import React, { useEffect, useState } from 'react';
 
 // 2. Estadísticas de solicitudes de servicios
 // Esta vista devuelve estadísticas de las solicitudes de servicios por usuario.
 
-const UserRequestsChart: React.FC<UserRequestsChartProps> = ({ data }) => {
+
+interface UserRequest {
+  usuario_id: number;
+  nombre: string;
+  solicitudes: number;
+  porcentaje: number;
+}
+
+const UserRequestsChart: React.FC = () => {
+  const [data, setData] = useState<UserRequest[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("https://desarrollouv.dismatexco.com/stats/solicitudes-servicios", {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Error al obtener los datos');
+        }
+
+        const result = await response.json();
+        console.log(result)
+        setData(result);
+      } catch (err: any) {
+        setError(err.message || 'Error desconocido');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) return <div className="p-6">Cargando...</div>;
+  if (error) return <div className="p-6 text-red-500">Error: {error}</div>;
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">
         Solicitudes de Servicios por Usuario
       </h3>
 
-      {/* Tabla de usuarios */}
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto text-sm text-left text-gray-700">
           <thead className="bg-[#e2cef8] text-xs uppercase text-gray-700">

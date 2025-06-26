@@ -1,38 +1,79 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { ServiceStats} from '../../types/estadisticasTypes';
 import StatCard from './StatCard';
 import { Activity, Calendar } from 'lucide-react';
 
-// 1. Estadísticas de servicios genéricos
-// Esta vista permite obtener estadísticas de un servicio específico 
-// (consulta, medicamentos, asesoramiento)
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+// Tipos definidos localmente
+type PrioridadStats = {
+  total: number;
+  porcentaje: number;
+};
+
+type ServiceStats = {
+  prioritario: PrioridadStats;
+  general: PrioridadStats;
+};
+
 const COLORSC = ['#729ed1', '#8572d1'];
 
+const defaultStats: ServiceStats = {
+  prioritario: { total: 0, porcentaje: 0 },
+  general: { total: 0, porcentaje: 0 }
+};
 
-interface ServiceStatsChartProps {
-  data: ServiceStats;
-  selectedService: string;
-  selectedType: string;
-  loading: boolean;
-  onServiceChange: (service: string) => void;
-  onTypeChange: (type: string) => void;
-}
+const ServiceStatsChart: React.FC = () => {
+  const [data, setData] = useState<ServiceStats>(defaultStats);
+  const [selectedService, setSelectedService] = useState('consulta');
+  const [selectedType, setSelectedType] = useState('');
+  const [loading, setLoading] = useState(false);
 
-const ServiceStatsChart: React.FC<ServiceStatsChartProps> = ({
-  data,
-  selectedService,
-  selectedType,
-  loading,
-  onServiceChange,
-  onTypeChange
-}) => {
+  const fetchStats = async () => {
+    setLoading(true);
+    const apiUrl = localStorage.getItem('api_url');
+    const token = localStorage.getItem('token');
+    
+    try {
+      const res = await fetch("https://desarrollouv.dismatexco.com/stats/servicios-generico", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          servicio: selectedService,
+          tipo: selectedType
+        })
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Error al obtener estadísticas');
+      }
+
+      const result = await res.json();
+      console.log(result)
+      setData({
+        prioritario: result.prioritario || { total: 0, porcentaje: 0 },
+        general: result.general || { total: 0, porcentaje: 0 }
+      });
+    } catch (error) {
+      console.error('Error al cargar estadísticas:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+  }, [selectedService, selectedType]);
+
   const chartData = [
     { name: 'Prioritario', value: data.prioritario.total, porcentaje: data.prioritario.porcentaje },
     { name: 'General', value: data.general.total, porcentaje: data.general.porcentaje }
   ];
+
+  // FRONTED 
 
   return (
     <div className="space-y-6">
@@ -40,9 +81,9 @@ const ServiceStatsChart: React.FC<ServiceStatsChartProps> = ({
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">Estadísticas de Servicios</h3>
           <div className="flex gap-2">
-            <select 
-              value={selectedService} 
-              onChange={(e) => onServiceChange(e.target.value)}
+            <select
+              value={selectedService}
+              onChange={(e) => setSelectedService(e.target.value)}
               className="px-3 py-1 border border-gray-300 rounded-md text-sm"
             >
               <option value="consulta">Consulta Médica</option>
@@ -57,7 +98,7 @@ const ServiceStatsChart: React.FC<ServiceStatsChartProps> = ({
             )}
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <ResponsiveContainer width="100%" height={300}>
@@ -72,7 +113,7 @@ const ServiceStatsChart: React.FC<ServiceStatsChartProps> = ({
                   label={(entry) => `${entry.porcentaje}%`}
                 >
                   {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORSC[index % COLORS.length]} />
+                    <Cell key={`cell-${index}`} fill={COLORSC[index % COLORSC.length]} />
                   ))}
                 </Pie>
                 <Tooltip />
@@ -80,17 +121,17 @@ const ServiceStatsChart: React.FC<ServiceStatsChartProps> = ({
               </PieChart>
             </ResponsiveContainer>
           </div>
-          
+
           <div className="space-y-4">
-            <StatCard 
-              title="Turnos Prioritarios" 
+            <StatCard
+              title="Turnos Prioritarios"
               value={data.prioritario.total}
               subtitle={`${data.prioritario.porcentaje}% del total`}
               icon={Activity}
               color="blue"
             />
-            <StatCard 
-              title="Turnos Generales" 
+            <StatCard
+              title="Turnos Generales"
               value={data.general.total}
               subtitle={`${data.general.porcentaje}% del total`}
               icon={Calendar}

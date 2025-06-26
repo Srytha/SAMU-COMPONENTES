@@ -20,6 +20,7 @@ export default function RegistroForm() {
     password: "",
     confirmPassword: "",
     discapacidad: "",
+    puntoAtencion: ""
   });
   const [qrCode, setQrCode] = useState(null);
   const [error, setError] = useState("");
@@ -51,6 +52,7 @@ export default function RegistroForm() {
         password: formData.password,
         // El cambio xd
         ...(formData.discapacidad && { discapacidad: formData.discapacidad }),
+        ...(formData.puntoAtencion && { puntoAtencion: formData.puntoAtencion }),
       };
 
       const res = await fetch("https://desarrollouv.dismatexco.com/auth/registro", {
@@ -201,7 +203,22 @@ export default function RegistroForm() {
             </SelectContent>
           </Select>
         </div>
-
+        <div className="space-y-2">
+        <Label htmlFor="puntoAtencion">Punto de Atención</Label>
+        <Select
+          value={formData.puntoAtencion}
+          onValueChange={handleSelect("puntoAtencion")}
+        >
+          <SelectTrigger id="puntoAtencion">
+            <SelectValue placeholder="Seleccione un punto de atención" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="sur">Sur</SelectItem>
+            <SelectItem value="centro">Centro</SelectItem>
+            <SelectItem value="norte">Norte</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
         {error && <div className="text-red-600">{error}</div>}
         {success && <div className="text-green-600">{success}</div>}
         {qrCode && (

@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -10,23 +9,59 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
-import { ServiceTypes } from '../../types/estadisticasTypes';
 import StatCard from './StatCard';
 import { Activity, Calendar } from 'lucide-react';
 
-interface ServiceTypesChartProps {
-  data: ServiceTypes;
-}
-
+export type ServiceTypes = {
+  prioritario: { total: number; porcentaje: number };
+  general: { total: number; porcentaje: number };
+};
 
 // 3. Estadísticas de tipos de servicio
 // Esta vista devuelve estadísticas de los tipos de servicio (prioritario y general) 
 // para cada modelo de servicio.
 // Se agregan los totales y porcentajes de cada tipo de servicio.
-
 const COLORS = ['#729ed1', '#8572d1'];
 
-const ServiceTypesChart: React.FC<ServiceTypesChartProps> = ({ data }) => {
+const ServiceTypesChart: React.FC = () => {
+  const [data, setData] = useState<ServiceTypes | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('token'); 
+        if (!token) throw new Error('No token found');
+
+        const response = await fetch("https://desarrollouv.dismatexco.com/stats/tipos-servicio", {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result: ServiceTypes = await response.json();
+        setData(result);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) return <div className="p-6">Cargando estadísticas...</div>;
+  if (error) return <div className="p-6 text-red-600">Error: {error}</div>;
+  if (!data) return null;
+
   const chartData = [
     { name: 'Prioritario', value: data.prioritario.total, porcentaje: data.prioritario.porcentaje },
     { name: 'General', value: data.general.total, porcentaje: data.general.porcentaje }
