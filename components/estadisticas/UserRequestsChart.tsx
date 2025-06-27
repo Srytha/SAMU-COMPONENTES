@@ -65,9 +65,9 @@ const UserRequestsChart: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((usuario) => (
-              <tr key={usuario.usuario_id} className="border-b">
-                <td className="px-4 py-2">{usuario.usuario_id}</td>
+            {data.map((usuario, index) => (
+              <tr key={index} className="border-b">
+                <td className="px-4 py-2">{index + 1}</td>
                 <td className="px-4 py-2">{usuario.nombre}</td>
                 <td className="px-4 py-2 text-right">{usuario.solicitudes}</td>
                 <td className="px-4 py-2 text-right">{usuario.porcentaje}%</td>
@@ -81,3 +81,4 @@ const UserRequestsChart: React.FC = () => {
 };
 
 export default UserRequestsChart;
+//

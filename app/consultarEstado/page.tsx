@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 import Footer from "@/components/footer/Footer";
-import ResultadoConsulta from "@/components/checkStatus/QueryResult";
-import ConsultaPorNumero from "@/components/checkStatus/QueryByNumber";
-import ConsultaPorDocumento from "@/components/checkStatus/QueryByDocument";
+import ResultadoConsulta from "@/components/consultarEstado/Resultados";
+import ConsultaPorNumero from "@/components/consultarEstado/ConsultaPorDocumento";
+
+// Turno pendiente
+// Devuelve todos los turnos pendientes del usuario, agrupados por servicio.
 
 export default function ConsultarEstadoPage() {
   return (
@@ -30,21 +31,13 @@ export default function ConsultarEstadoPage() {
               Volver al inicio
             </Link>
             <h1 className="text-2xl md:text-3xl font-bold mb-2">Consultar Estado</h1>
-            <p className="text-muted-foreground">Verifique el estado actual de su turno</p>
           </div>
 
           {/* Tabs */}
           <Tabs defaultValue="numero" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="numero">Por Número de Turno</TabsTrigger>
-              <TabsTrigger value="documento">Por Documento</TabsTrigger>
-            </TabsList>
-
+        
             <TabsContent value="numero">
               <ConsultaPorNumero />
-            </TabsContent>
-            <TabsContent value="documento">
-              <ConsultaPorDocumento />
             </TabsContent>
           </Tabs>
 
