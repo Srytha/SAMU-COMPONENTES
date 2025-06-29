@@ -10,7 +10,7 @@ export default function MobileAccessCard() {
   const [mostrarQR, setMostrarQR] = useState(false);
   // URL Se debe ir cambiando según el entorno de desarrollo :b
   // ademas solo
-  const urlNgrok = "https://8802-2800-e2-4180-49e-1c2e-6279-5968-2419.ngrok-free.app";
+  const urlNgrok = "https://261f-2800-e2-4180-49e-7967-507a-fe83-ecdf.ngrok-free.app";
 
   return (
     <Card className="mt-4">

@@ -5,77 +5,46 @@ import Link from "next/link";
 import { ArrowLeft, AlertTriangle, Check, X } from "lucide-react";
 import { AuthProvider } from "@/components/login/AuthProvider";
 import Footer from "@/components/footer/Footer";
-import { Badge } from '@/components/ui/badge';
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 
 export default function CancelarTurno() {
-  const [codigoTurno, setCodigoTurno] = useState("");
+  const [servicio, setServicio] = useState("consulta");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [confirmDialog, setConfirmDialog] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!codigoTurno.trim()) {
-      setError("Por favor ingrese el código del turno");
-      return;
-    }
-    
-    // Validar formato del código (G### o P###)
-    const formatoValido = /^[GP]\d{3}$/.test(codigoTurno);
-    if (!formatoValido) {
-      setError("El formato del código debe ser G### para turnos generales o P### para prioritarios");
-      return;
-    }
-    
-    setConfirmDialog(true);
-    setError("");
-  };
-
   const handleCancelar = async () => {
     setLoading(true);
     setError("");
-    
+
     try {
       const token = localStorage.getItem("token");
-      
-      // Extraer tipo y número del código
-      const tipo = codigoTurno.startsWith("G") ? "general" : "prioritario";
-      const numero = parseInt(codigoTurno.substring(1));
-      
-      const response = await fetch("http://127.0.0.1:8000/cancelar-turno", {
+
+      const response = await fetch("https://desarrollouv.dismatexco.com//service/cancelar-turno", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ 
-          servicio: "cualquier_servicio", // Se puede ajustar según API
-          codigo_turno: codigoTurno,
-          tipo: tipo,
-          numero: numero
-        })
+        body: JSON.stringify({ servicio })
       });
-      
+
+      const data = await response.json();
+
       if (response.ok) {
         setConfirmDialog(false);
         setSuccess(true);
-        setCodigoTurno("");
-        
-        // Resetear después de unos segundos
-        setTimeout(() => {
-          setSuccess(false);
-        }, 5000);
+        setTimeout(() => setSuccess(false), 5000);
       } else {
-        const errorData = await response.json();
+        setError(data.error || "Error al cancelar el turno");
         setConfirmDialog(false);
-        setError(errorData.mensaje || "Error al cancelar el turno");
       }
     } catch (err) {
-      setConfirmDialog(false);
-      setError("Error de conexión con el servidor");
       console.error("Error:", err);
+      setError("Error de conexión con el servidor");
+      setConfirmDialog(false);
     } finally {
       setLoading(false);
     }
@@ -84,40 +53,29 @@ export default function CancelarTurno() {
   return (
     <AuthProvider>
       <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-indigo-50">
-        {/* Header */}
-         <header className="bg-blue-600 text-white sticky top-0 z-10 shadow-md py-3">
-      <div className="container mx-auto px-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-xl">SAMU</span>
-          <Badge
-            variant="outline"
-            className="text-xs font-normal border-blue-400 text-blue-100"
-          >
-            Sistema de Atención
-          </Badge>
-        </div>
-      </div>
-    </header>
-        
+        {/* Encabezado */}
+        <header className="bg-blue-600 text-white sticky top-0 z-10 shadow-md py-3">
+          <div className="container mx-auto px-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-xl">SAMU</span>
+              <Badge variant="outline" className="text-xs font-normal border-blue-400 text-blue-100">
+                Sistema de Atención
+              </Badge>
+            </div>
+          </div>
+        </header>
 
-        {/* Main Content */}
+        {/* Contenido principal */}
         <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
           <div className="max-w-2xl mx-auto">
             <div className="mb-6">
-              <Link 
-                href="/vistaPaciente" 
-                className="text-blue-600 hover:underline flex items-center gap-1 mb-4"
-              >
+              <Link href="/vistaPaciente" className="text-blue-600 hover:underline flex items-center gap-1 mb-4">
                 <ArrowLeft className="h-4 w-4" />
                 Volver al panel principal
               </Link>
 
-              <h1 className="text-2xl md:text-3xl font-bold mb-2">
-                Cancelar Turno
-              </h1>
-              <p className="text-gray-500">
-                Ingrese el código de su turno para cancelarlo
-              </p>
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">Cancelar Turno</h1>
+              <p className="text-gray-500">Seleccione el servicio del que desea cancelar el turno.</p>
             </div>
 
             <div className="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -128,7 +86,7 @@ export default function CancelarTurno() {
                     <Check className="h-5 w-5 text-green-600 mt-0.5" />
                     <div>
                       <h3 className="text-lg font-medium">¡Turno cancelado exitosamente!</h3>
-                      <p>El turno con código <strong>{codigoTurno}</strong> ha sido cancelado correctamente.</p>
+                      <p>Tu turno en el servicio <strong>{servicio}</strong> ha sido eliminado correctamente.</p>
                     </div>
                   </div>
                 </div>
@@ -141,45 +99,34 @@ export default function CancelarTurno() {
                 </div>
               )}
 
+              {/* Selector de servicio */}
               {!success && (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label htmlFor="codigoTurno" className="block text-lg font-medium mb-2">
-                        Código del Turno
-                      </label>
-                      <input
-                        id="codigoTurno"
-                        type="text"
-                        value={codigoTurno}
-                        onChange={(e) => setCodigoTurno(e.target.value.toUpperCase())}
-                        placeholder="Ejemplo: G015 o P016"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        maxLength={4}
-                      />
-                      <p className="text-sm text-gray-500 mt-2">
-                        Ingrese el código que recibió cuando solicitó el turno (G### para turnos generales, P### para prioritarios)
-                      </p>
-                    </div>
+                <>
+                  <div className="mb-4">
+                    <Label htmlFor="servicio" className="block text-sm font-medium text-gray-700 mb-2">
+                      Selecciona el servicio:
+                    </Label>
+                    <select
+                      id="servicio"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={servicio}
+                      onChange={(e) => setServicio(e.target.value)}
+                    >
+                      <option value="consulta">Consulta</option>
+                      <option value="medicamentos">Medicamentos</option>
+                      <option value="asesoramiento">Asesoramiento</option>
+                    </select>
                   </div>
 
-                  <div className="flex justify-end gap-4 pt-4">
-                    <Link href="/vistaPaciente">
-                      <button 
-                        type="button"
-                        className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                      >
-                        Volver
-                      </button>
-                    </Link>
+                  <div className="flex justify-end pt-4">
                     <button
-                      type="submit"
+                      onClick={() => setConfirmDialog(true)}
                       className="px-6 py-2 rounded-md bg-red-600 text-white font-medium hover:bg-red-700"
                     >
                       Cancelar Turno
                     </button>
                   </div>
-                </form>
+                </>
               )}
             </div>
           </div>
@@ -199,7 +146,7 @@ export default function CancelarTurno() {
               <div>
                 <h3 className="text-lg font-bold text-gray-900 mb-1">¿Está seguro?</h3>
                 <p className="text-gray-600">
-                  Esta acción cancelará el turno <strong>{codigoTurno}</strong> y no podrá revertirse.
+                  Esta acción cancelará tu turno del servicio <strong>{servicio}</strong> y no podrá revertirse.
                 </p>
               </div>
             </div>

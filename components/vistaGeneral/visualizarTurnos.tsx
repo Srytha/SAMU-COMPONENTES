@@ -1,9 +1,7 @@
-"use client"; 
-
-// Panel de Turnos
+"use client";
 
 import React, { useState, useEffect } from "react";
-import { Users, AlertCircle, Monitor } from "lucide-react"; 
+import { Users, AlertCircle, Monitor } from "lucide-react";
 
 // Tipo de datos para un turno
 type Turno = {
@@ -20,70 +18,62 @@ type PuntoAtencion = {
 };
 
 const VisualizarTurnosPage: React.FC = () => {
-  // Estados del componente
   const [turnoActual, setTurnoActual] = useState<Turno | null>(null);
   const [ultimosTurnos, setUltimosTurnos] = useState<Turno[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [puntoAtencion, setPuntoAtencion] = useState<string>("Sur");
 
-  // Opciones para los puntos de atención
   const puntosAtencion: PuntoAtencion[] = [
     { value: "Sur", label: "Sur" },
     { value: "Centro", label: "Centro" },
     { value: "Norte", label: "Norte" },
   ];
 
-  // Función simulada para obtener datos de turnos
   const obtenerTurnos = async (puntoParam = puntoAtencion) => {
     try {
-      setLoading(true); 
-      setError(""); 
+      setLoading(true);
+      setError("");
 
-      // Datos simulados
-      const datosSimulados = {
-        turno_actual: {
-          id: 1,
-          tipo: "prioritario" as const,
-          numero: 5,
-          punto: puntoParam,
+      const token = localStorage.getItem("token");
+      const url = new URL("http://127.0.0.1:8000/service/visualizar-turno");
+      url.searchParams.append("servicio", "consulta");
+      url.searchParams.append("puntoAtencion", puntoParam);
+
+      const response = await fetch(url.toString(), {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        // Simula últimos turnos atendidos
-        ultimos_turnos: [
-          { id: 1, tipo: "prioritario" as const, numero: 15, punto: puntoParam },
-          { id: 2, tipo: "prioritario" as const, numero: 4, punto: puntoParam },
-          { id: 3, tipo: "general" as const, numero: 14, punto: puntoParam },
-          { id: 4, tipo: "general" as const, numero: 13, punto: puntoParam },
-        ],
-      };
+      });
 
-      // Simula retardo de red
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Error al obtener turnos");
+      }
 
-      // Actualiza estados
-      setTurnoActual(datosSimulados.turno_actual);
-      setUltimosTurnos(datosSimulados.ultimos_turnos);
+      const data = await response.json();
+      setTurnoActual(data.turno_actual);
+      setUltimosTurnos(data.ultimos_turnos);
     } catch (err: any) {
       setError(err.message || "Error al obtener turnos.");
       setTurnoActual(null);
       setUltimosTurnos([]);
     } finally {
-      setLoading(false); // Finaliza carga
+      setLoading(false);
     }
   };
 
-  // Obtiene turnos al cargar el componente o cambiar filtros
   useEffect(() => {
     obtenerTurnos();
   }, [puntoAtencion]);
 
-  // Cambia punto de atención seleccionado
   const handlePuntoChange = (nuevoPunto: string) => {
     setPuntoAtencion(nuevoPunto);
     obtenerTurnos(nuevoPunto);
   };
 
-  // Formatea número del turno (ej: P005)
   const formatearNumeroTurno = (turno: Turno | null) => {
     if (!turno) return "";
     return turno.tipo === "prioritario"
@@ -91,7 +81,6 @@ const VisualizarTurnosPage: React.FC = () => {
       : `G${String(turno.numero).padStart(3, "0")}`;
   };
 
-  // Fronted 
   const obtenerColorTurno = (tipo: "general" | "prioritario") => {
     return tipo === "prioritario"
       ? "bg-red-500 text-white"
@@ -101,7 +90,6 @@ const VisualizarTurnosPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="w-full px-2">
-        {/* Encabezado y filtros */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div>
@@ -111,9 +99,7 @@ const VisualizarTurnosPage: React.FC = () => {
               </h1>
               <p className="text-gray-600 mt-1">Visualización en tiempo real</p>
             </div>
-
             <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
-              {/* Selector de punto de atención */}
               <div className="flex flex-col">
                 <label className="text-sm font-medium text-gray-700 mb-1">
                   Punto de Atención
@@ -134,7 +120,6 @@ const VisualizarTurnosPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Mensaje de error si existe */}
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-center gap-2">
             <AlertCircle className="text-red-500" size={20} />
@@ -142,9 +127,7 @@ const VisualizarTurnosPage: React.FC = () => {
           </div>
         )}
 
-        {/* Sección principal */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          {/* Turno actual */}
           <div className="xl:col-span-1 flex flex-col">
             <div className="bg-white rounded-lg shadow-lg p-8 text-center flex-grow flex flex-col">
               <h2 className="text-xl font-semibold text-gray-800 mb-6">
@@ -193,7 +176,6 @@ const VisualizarTurnosPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Últimos turnos */}
           <div className="xl:col-span-2 flex flex-col">
             <div className="bg-white rounded-lg shadow-lg p-6 flex-grow">
               <h2 className="text-xl font-semibold text-gray-800 mb-6">
@@ -252,7 +234,6 @@ const VisualizarTurnosPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Leyenda de colores */}
         <div className="mt-6 bg-white rounded-lg shadow-sm p-4">
           <div className="flex justify-center items-center text-sm text-gray-600 gap-6">
             <span className="flex items-center gap-2">

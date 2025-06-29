@@ -3,11 +3,10 @@
 import { useState, useEffect } from 'react';
 import { AdminLayout } from "@/components/dashboardPrincipal/layout";
 
-interface AnnouncementFromBackend {
+interface Announcement {
   id: number;
   title: string;
   url: string;
-  created_at: string;
 }
 
 interface UserData {
@@ -15,12 +14,11 @@ interface UserData {
 }
 
 export default function AnnouncementsPage() {
-  const [images, setImages] = useState<AnnouncementFromBackend[]>([]);
+  const [images, setImages] = useState<Announcement[]>([]);
   const [formData, setFormData] = useState({
     title: '',
     file: null as File | null,
     preview: '',
-    created_at: new Date().toISOString(),
   });
 
   const [isLoading, setIsLoading] = useState({
@@ -32,10 +30,55 @@ export default function AnnouncementsPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    setUserData({ rol: 'admin' });
+    if (typeof window !== 'undefined') {
+      const storedToken = localStorage.getItem('token');
+      setToken(storedToken);
+    }
+    setUserData({ rol: 'admin' }); // Simulación de usuario admin
   }, []);
+
+  useEffect(() => {
+    const fetchAnuncios = async () => {
+      setIsLoading(prev => ({ ...prev, fetch: true }));
+
+      try {
+        if (!token) {
+          setError('Token no encontrado');
+          return;
+        }
+
+        const res = await fetch('https://desarrollouv.dismatexco.com/administrador/traer_anuncios', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || 'Error al obtener los anuncios');
+        }
+
+        const anuncios: Announcement[] = data.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          url: item.url,
+        }));
+
+        setImages(anuncios);
+      } catch (err: any) {
+        setError(err.message || 'Ocurrió un error al cargar los anuncios');
+      } finally {
+        setIsLoading(prev => ({ ...prev, fetch: false }));
+      }
+    };
+
+    if (token) fetchAnuncios();
+  }, [token]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -46,7 +89,13 @@ export default function AnnouncementsPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+    const allowedMimeTypes = ['image/jpeg', 'image/png'];
+    const allowedExtensions = ['jpg', 'jpeg', 'png'];
+    const extension = file.name.split('.').pop()?.toLowerCase();
+    const mimeValid = allowedMimeTypes.includes(file.type);
+    const extValid = extension && allowedExtensions.includes(extension);
+
+    if (!mimeValid || !extValid) {
       setError('Solo se permiten archivos JPG o PNG');
       return;
     }
@@ -82,29 +131,69 @@ export default function AnnouncementsPage() {
       return;
     }
 
-    setTimeout(() => {
-      const newImage: AnnouncementFromBackend = {
+    if (!token) {
+      setError('Token no encontrado');
+      setIsLoading(prev => ({ ...prev, submit: false }));
+      return;
+    }
+
+    try {
+      const imageForm = new FormData();
+      imageForm.append('image', formData.file);
+
+      const uploadRes = await fetch('https://api.imgbb.com/1/upload?key=857ec7f15f183d816cb1aa3e258115d3', {
+        method: 'POST',
+        body: imageForm,
+      });
+
+      const uploadData = await uploadRes.json();
+
+      if (!uploadData.success) {
+        throw new Error('Error al subir la imagen a ImgBB');
+      }
+
+      const imageUrl = uploadData.data.url;
+
+      const res = await fetch('https://desarrollouv.dismatexco.com/administrador/subir_anuncio', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          url: imageUrl,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Error al subir el anuncio');
+
+      const newAnnouncement: Announcement = {
         id: Math.max(0, ...images.map(i => i.id)) + 1,
         title: formData.title,
-        url: formData.preview,
-        created_at: formData.created_at,
+        url: imageUrl,
       };
 
-      setImages(prev => [newImage, ...prev]);
-      setSuccess('anuncio subido exitosamente');
+      setImages(prev => [newAnnouncement, ...prev]);
+      setSuccess('Anuncio subido exitosamente');
       setTimeout(() => setSuccess(null), 5000);
+
       setFormData({
         title: '',
         file: null,
         preview: '',
-        created_at: new Date().toISOString(),
       });
+
+    } catch (err: any) {
+      setError(err.message || 'Ocurrió un error al subir el anuncio');
+    } finally {
       setIsLoading(prev => ({ ...prev, submit: false }));
-    }, 1000);
+    }
   };
 
   const handleDelete = (id: number) => {
-    if (!window.confirm('¿Estás seguro de que quieres eliminar esta anuncio?')) return;
+    if (!window.confirm('¿Estás seguro de que quieres eliminar este anuncio?')) return;
 
     setIsLoading(prev => ({ ...prev, delete: true }));
     setTimeout(() => {
@@ -112,47 +201,23 @@ export default function AnnouncementsPage() {
       if (imgToDelete) URL.revokeObjectURL(imgToDelete.url);
       setImages(prev => prev.filter(img => img.id !== id));
       setSuccess('Anuncio eliminado exitosamente');
-
       setTimeout(() => setSuccess(null), 5000);
-
       setIsLoading(prev => ({ ...prev, delete: false }));
     }, 800);
   };
 
-  useEffect(() => {
-    setIsLoading(prev => ({ ...prev, fetch: true }));
-    setTimeout(() => {
-      setImages([]);
-      setIsLoading(prev => ({ ...prev, fetch: false }));
-    }, 1000);
-
-    return () => {
-      images.forEach(image => URL.revokeObjectURL(image.url));
-    };
-  }, []);
-
   if (!userData) return null;
 
-  if (!userData || userData.rol !== 'admin') {
-    return (
-      <div className="p-4 text-red-600">⚠️ No tienes permisos para acceder a esta sección</div>
-    );
-  }
 
   return (
-    <AdminLayout
-      activeLink="/admin/anuncios"
-      title="Gestión de Anuncios"
-      pageTitle="Panel de Anuncios"
-    >
+    <AdminLayout activeLink="/admin/anuncios" title="Gestión de Anuncios" pageTitle="Panel de Anuncios">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 mb-4">{error}</div>}
         {success && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 mb-4">{success}</div>}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Formulario */}
           <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md border">
-            <h2 className="text-xl font-semibold mb-4">Subir nueva anuncio</h2>
+            <h2 className="text-xl font-semibold mb-4">Subir nuevo anuncio</h2>
 
             <label className="block mb-2 text-sm">Título *</label>
             <input
@@ -164,7 +229,7 @@ export default function AnnouncementsPage() {
               required
             />
 
-            <label className="block mb-2 text-sm">Archivo *</label>
+            <label className="block mb-2 text-sm">Anuncio *</label>
             <input
               type="file"
               accept="image/jpeg,image/png"
@@ -180,19 +245,6 @@ export default function AnnouncementsPage() {
               </div>
             )}
 
-            <label className="block mb-2 text-sm">Fecha *</label>
-            <input
-              type="date"
-              name="created_at"
-              value={formData.created_at.split('T')[0]}
-              onChange={e => setFormData(prev => ({
-                ...prev,
-                created_at: new Date(e.target.value).toISOString()
-              }))}
-              className="w-full mb-4 p-2 border rounded"
-              required
-            />
-
             <button
               type="submit"
               disabled={isLoading.submit}
@@ -204,43 +256,27 @@ export default function AnnouncementsPage() {
             </button>
           </form>
 
-          {/* Lista de imágenes */}
           <div className="bg-white p-6 rounded shadow-md border">
             <h2 className="text-xl font-semibold mb-4">Anuncios subidos</h2>
             {isLoading.fetch ? (
-              <div className="space-y-4">
-                {[...Array(3)].map((_, idx) => (
-                  <div key={idx} className="animate-pulse flex items-center gap-4 border p-4 rounded">
-                    <div className="bg-gray-300 w-40 h-28 rounded" />
-                    <div className="flex-1 space-y-2">
-                      <div className="h-4 bg-gray-300 rounded w-1/2" />
-                      <div className="h-3 bg-gray-200 rounded w-1/3" />
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <p>Cargando anuncios...</p>
             ) : images.length === 0 ? (
               <p className="text-center text-gray-500">No hay anuncios subidos</p>
             ) : (
               <div className="space-y-4">
                 {images.map(img => (
-                  <div key={img.id} className="border p-4 rounded">
-                    <div className="flex items-center gap-4">
-                      <img src={img.url} alt={img.title} className="w-52 h-36 object-cover rounded border" />
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-800">{img.title}</h3>
-                        <p className="text-sm text-gray-600">
-                          {new Date(img.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => handleDelete(img.id)}
-                        disabled={isLoading.delete}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        {isLoading.delete ? '' : '🗑️'}
-                      </button>
+                  <div key={`${img.id}-${img.url}`} className="border p-4 rounded flex items-center gap-4">
+                    <img src={img.url} alt={img.title} className="w-52 h-36 object-cover rounded border" />
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-800">{img.title}</h3>
                     </div>
+                    <button
+                      onClick={() => handleDelete(img.id)}
+                      disabled={isLoading.delete}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      {isLoading.delete ? '' : '🗑'}
+                    </button>
                   </div>
                 ))}
               </div>
