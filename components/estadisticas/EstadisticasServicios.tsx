@@ -34,7 +34,7 @@ const ServiceStatsChart: React.FC = () => {
     const token = localStorage.getItem('token');
     
     try {
-      const res = await fetch("https://desarrollouv.dismatexco.com/stats/servicios-generico", {
+      const res = await fetch("https://projectdesarrollo.onrender.com/stats/servicios-generico", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

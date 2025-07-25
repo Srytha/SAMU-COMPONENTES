@@ -36,8 +36,6 @@ export default function SolicitarTurno() {
   Volver al panel principal
 </Link>
 
-              <h1 className="text-2xl md:text-3xl font-bold mb-2">Solicitar Turno</h1>
-              <p className="text-muted-foreground">Complete el formulario para obtener su ticket digital</p>
             </div>
             <PatientForm />
           </div>

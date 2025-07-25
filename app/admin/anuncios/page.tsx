@@ -50,7 +50,7 @@ export default function AnnouncementsPage() {
           return;
         }
 
-        const res = await fetch('https://desarrollouv.dismatexco.com/administrador/traer_anuncios', {
+        const res = await fetch('https://projectdesarrollo.onrender.com/administrador/traer_anuncios', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -154,7 +154,7 @@ export default function AnnouncementsPage() {
 
       const imageUrl = uploadData.data.url;
 
-      const res = await fetch('https://desarrollouv.dismatexco.com/administrador/subir_anuncio', {
+      const res = await fetch('https://projectdesarrollo.onrender.com/administrador/subir_anuncio', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -170,7 +170,7 @@ export default function AnnouncementsPage() {
       if (!res.ok) throw new Error(data.message || 'Error al subir el anuncio');
 
       const newAnnouncement: Announcement = {
-        id: Math.max(0, ...images.map(i => i.id)) + 1,
+        id: Math.max(0, ...images.map(i => i.id)) + 1, // Solo local
         title: formData.title,
         url: imageUrl,
       };
@@ -192,22 +192,44 @@ export default function AnnouncementsPage() {
     }
   };
 
-  const handleDelete = (id: number) => {
+  // ✅ CORREGIDO: id por query param
+  const handleDelete = async (id: number) => {
     if (!window.confirm('¿Estás seguro de que quieres eliminar este anuncio?')) return;
 
+    if (!token) {
+      setError('Token no encontrado');
+      return;
+    }
+
     setIsLoading(prev => ({ ...prev, delete: true }));
-    setTimeout(() => {
-      const imgToDelete = images.find(img => img.id === id);
-      if (imgToDelete) URL.revokeObjectURL(imgToDelete.url);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const res = await fetch(`https://projectdesarrollo.onrender.com/administrador/borrar_anuncio?id=${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Error al eliminar el anuncio');
+      }
+
       setImages(prev => prev.filter(img => img.id !== id));
       setSuccess('Anuncio eliminado exitosamente');
       setTimeout(() => setSuccess(null), 5000);
+    } catch (err: any) {
+      setError(err.message || 'Ocurrió un error al eliminar el anuncio');
+    } finally {
       setIsLoading(prev => ({ ...prev, delete: false }));
-    }, 800);
+    }
   };
 
   if (!userData) return null;
-
 
   return (
     <AdminLayout activeLink="/admin/anuncios" title="Gestión de Anuncios" pageTitle="Panel de Anuncios">

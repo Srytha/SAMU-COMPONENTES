@@ -20,7 +20,7 @@ const UserRequestsChart: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("https://desarrollouv.dismatexco.com/stats/solicitudes-servicios", {
+        const response = await fetch("https://projectdesarrollo.onrender.com/stats/solicitudes-servicios", {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

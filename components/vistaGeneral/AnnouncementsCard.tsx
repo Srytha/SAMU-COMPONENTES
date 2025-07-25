@@ -25,7 +25,7 @@ export default function AnnouncementsCard() {
           return;
         }
 
-        const res = await fetch('https://desarrollouv.dismatexco.com/administrador/traer_anuncios', {
+        const res = await fetch('https://projectdesarrollo.onrender.com/administrador/traer_anuncios', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
