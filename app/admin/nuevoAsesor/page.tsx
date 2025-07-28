@@ -6,7 +6,7 @@ import PersonalInfoForm from "@/components/nuevoAsesor/PersonalInfoForm"
 export default function NuevoUsuario() {
   return (
     <AdminLayout
-      activeLink="/admin/usuarios"
+      activeLink="/admin"
       title="Usuarios"
       pageTitle="Nuevo Usuario"
     >
@@ -18,7 +18,7 @@ export default function NuevoUsuario() {
           </p>
         </div>
 
-        <PersonalInfoForm onNext={() => {}} />
+        <PersonalInfoForm />
       </div>
     </AdminLayout>
   )

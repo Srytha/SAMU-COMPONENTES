@@ -20,6 +20,19 @@ export default function PatientForm() {
   const [turnoAsignado, setTurnoAsignado] = useState("");
   const [turnoExistente, setTurnoExistente] = useState("");
 
+  const getTipoInicial = () => {
+    switch (tipoAtencion) {
+      case "consulta":
+        return "C";
+      case "medicamentos":
+        return "M";
+      case "asesoramiento":
+        return "A";
+      default:
+        return "";
+    }
+  };
+
   const handleSubmit = async () => {
     if (!user) {
       alert("Debe iniciar sesión para solicitar un turno.");
@@ -49,6 +62,8 @@ export default function PatientForm() {
 
       const data = await response.json();
 
+      const tipoInicial = getTipoInicial();
+
       if (!response.ok) {
         alert(data.error || "Error al solicitar el turno");
         return;
@@ -57,15 +72,15 @@ export default function PatientForm() {
       if (data.mensaje === "Ya tienes un turno pendiente" && data.turno) {
         const tipo = data.turno.tipo === "prioritario" ? "P" : "G";
         const numero = String(data.turno.numero).padStart(3, "0");
-        setTurnoExistente(`${tipo}${numero}`);
+        setTurnoExistente(`${tipo}${numero}${tipoInicial}`);
         return;
       }
 
       if (data.turno_prioritario) {
-        setTurnoAsignado(`P${String(data.turno_prioritario).padStart(3, "0")}`);
+        setTurnoAsignado(`P${String(data.turno_prioritario).padStart(3, "0")}${tipoInicial}`);
         setShowSuccess(true);
       } else if (data.turno_general) {
-        setTurnoAsignado(`G${String(data.turno_general).padStart(3, "0")}`);
+        setTurnoAsignado(`G${String(data.turno_general).padStart(3, "0")}${tipoInicial}`);
         setShowSuccess(true);
       }
     } catch (error) {

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import AppHeader from "@/components/vistaGeneral/AppHeader";
 import WelcomeSection from "@/components/vistaGeneral/WelcomeSection";
@@ -6,24 +6,22 @@ import AppFooter from "@/components/vistaGeneral/AppFooter";
 import AnnouncementsCard from "@/components/vistaGeneral/AnnouncementsCard";
 import MobileAccessCard from "@/components/vistaGeneral/MobileAccessCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import VisualizarTurnos from "@/components/vistaGeneral/visualizarTurnos"; 
-
+import VisualizarTurnos from "@/components/vistaGeneral/visualizarTurnos";
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50">
       {/* Header Section */}
       <AppHeader />
-      
+
       {/* Welcome Banner Section (Full Width) */}
-      <section className="w-full mb-8">
+      <section className="w-full mb-4">
         <WelcomeSection />
       </section>
-      
-      {/* Main Content */}
-      <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
-        <div className="w-full max-w-7xl mx-auto">
 
+      {/* Main Content */}
+      <main className="flex-1 container mx-auto px-4 py-4 md:py-6">
+        <div className="w-full max-w-7xl mx-auto">
           {/* Two-Column Layout */}
           <div className="grid md:grid-cols-3 gap-6">
             {/* Left Column (Service Status) */}

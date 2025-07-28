@@ -40,43 +40,40 @@ export default function AnnouncementsPage() {
     setUserData({ rol: 'admin' }); // Simulación de usuario admin
   }, []);
 
-  useEffect(() => {
-    const fetchAnuncios = async () => {
-      setIsLoading(prev => ({ ...prev, fetch: true }));
+  const fetchAnuncios = async () => {
+    setIsLoading(prev => ({ ...prev, fetch: true }));
 
-      try {
-        if (!token) {
-          setError('Token no encontrado');
-          return;
-        }
-
-        const res = await fetch('https://projectdesarrollo.onrender.com/administrador/traer_anuncios', {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.message || 'Error al obtener los anuncios');
-        }
-
-        const anuncios: Announcement[] = data.map((item: any) => ({
-          id: item.id,
-          title: item.title,
-          url: item.url,
-        }));
-
-        setImages(anuncios);
-      } catch (err: any) {
-        setError(err.message || 'Ocurrió un error al cargar los anuncios');
-      } finally {
-        setIsLoading(prev => ({ ...prev, fetch: false }));
+    try {
+      if (!token) {
+        setError('Token no encontrado');
+        return;
       }
-    };
 
+      const res = await fetch('https://projectdesarrollo.onrender.com/administrador/traer_anuncios', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Error al obtener los anuncios');
+
+      const anuncios: Announcement[] = data.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        url: item.url,
+      }));
+
+      setImages(anuncios);
+    } catch (err: any) {
+      setError(err.message || 'Ocurrió un error al cargar los anuncios');
+    } finally {
+      setIsLoading(prev => ({ ...prev, fetch: false }));
+    }
+  };
+
+  useEffect(() => {
     if (token) fetchAnuncios();
   }, [token]);
 
@@ -167,15 +164,9 @@ export default function AnnouncementsPage() {
       });
 
       const data = await res.json();
+
       if (!res.ok) throw new Error(data.message || 'Error al subir el anuncio');
 
-      const newAnnouncement: Announcement = {
-        id: Math.max(0, ...images.map(i => i.id)) + 1, // Solo local
-        title: formData.title,
-        url: imageUrl,
-      };
-
-      setImages(prev => [newAnnouncement, ...prev]);
       setSuccess('Anuncio subido exitosamente');
       setTimeout(() => setSuccess(null), 5000);
 
@@ -185,6 +176,9 @@ export default function AnnouncementsPage() {
         preview: '',
       });
 
+      // Vuelve a cargar lista actualizada
+      fetchAnuncios();
+
     } catch (err: any) {
       setError(err.message || 'Ocurrió un error al subir el anuncio');
     } finally {
@@ -192,8 +186,7 @@ export default function AnnouncementsPage() {
     }
   };
 
-  // ✅ CORREGIDO: id por query param
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: number, title: string) => {
     if (!window.confirm('¿Estás seguro de que quieres eliminar este anuncio?')) return;
 
     if (!token) {
@@ -206,22 +199,24 @@ export default function AnnouncementsPage() {
     setSuccess(null);
 
     try {
-      const res = await fetch(`https://projectdesarrollo.onrender.com/administrador/borrar_anuncio?id=${id}`, {
+      const res = await fetch(`https://projectdesarrollo.onrender.com/administrador/borrar_anuncio`, {
         method: 'DELETE',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify({ title }),
       });
 
       const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Error al eliminar el anuncio');
 
-      if (!res.ok) {
-        throw new Error(data.message || 'Error al eliminar el anuncio');
-      }
-
-      setImages(prev => prev.filter(img => img.id !== id));
       setSuccess('Anuncio eliminado exitosamente');
       setTimeout(() => setSuccess(null), 5000);
+
+      // Vuelve a cargar lista actualizada
+      fetchAnuncios();
+
     } catch (err: any) {
       setError(err.message || 'Ocurrió un error al eliminar el anuncio');
     } finally {
@@ -279,7 +274,16 @@ export default function AnnouncementsPage() {
           </form>
 
           <div className="bg-white p-6 rounded shadow-md border">
-            <h2 className="text-xl font-semibold mb-4">Anuncios subidos</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Anuncios subidos</h2>
+              <button
+                onClick={fetchAnuncios}
+                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                🔄 Actualizar
+              </button>
+            </div>
+
             {isLoading.fetch ? (
               <p>Cargando anuncios...</p>
             ) : images.length === 0 ? (
@@ -293,7 +297,7 @@ export default function AnnouncementsPage() {
                       <h3 className="font-semibold text-gray-800">{img.title}</h3>
                     </div>
                     <button
-                      onClick={() => handleDelete(img.id)}
+                      onClick={() => handleDelete(img.id, img.title)}
                       disabled={isLoading.delete}
                       className="text-red-600 hover:text-red-800"
                     >

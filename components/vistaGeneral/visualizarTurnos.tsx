@@ -22,12 +22,15 @@ const VisualizarTurnosPage: React.FC = () => {
   const [ultimosTurnos, setUltimosTurnos] = useState<Turno[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
-  const [puntoAtencion, setPuntoAtencion] = useState<string>("Sur");
+  const [puntoAtencion, setPuntoAtencion] = useState<string>("sur");
+
+  
+  const servicioClave = "consulta";
 
   const puntosAtencion: PuntoAtencion[] = [
-    { value: "Sur", label: "Sur" },
-    { value: "Centro", label: "Centro" },
-    { value: "Norte", label: "Norte" },
+    { value: "sur", label: "Sur" },
+    { value: "centro", label: "Centro" },
+    { value: "norte", label: "Norte" },
   ];
 
   const obtenerTurnos = async (puntoParam = puntoAtencion) => {
@@ -36,16 +39,21 @@ const VisualizarTurnosPage: React.FC = () => {
       setError("");
 
       const token = localStorage.getItem("token");
-      const url = new URL("http://127.0.0.1:8000/service/visualizar-turno");
-      url.searchParams.append("servicio", "consulta");
+      const url = new URL(
+        "https://projectdesarrollo.onrender.com/service/visualizar-turnos"
+      );
+      url.searchParams.append("servicio", servicioClave);
       url.searchParams.append("puntoAtencion", puntoParam);
 
       const response = await fetch(url.toString(), {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify({
+          puntoAtencion: puntoParam,
+        }),
       });
 
       if (!response.ok) {
@@ -54,8 +62,10 @@ const VisualizarTurnosPage: React.FC = () => {
       }
 
       const data = await response.json();
-      setTurnoActual(data.turno_actual);
-      setUltimosTurnos(data.ultimos_turnos);
+
+      const servicio = data[servicioClave];
+      setTurnoActual(servicio?.turno_actual || null);
+      setUltimosTurnos(servicio?.ultimos_turnos || []);
     } catch (err: any) {
       setError(err.message || "Error al obtener turnos.");
       setTurnoActual(null);
