@@ -32,8 +32,8 @@ const AppFooter = () => {
 const ContactInfo = () => (
   <ul className="space-y-2 text-blue-100">
     <ContactItem icon="email" text="Email: sistema.atencion@gmail.com" />
-    <ContactItem icon="phone" text="Teléfono: (123) 456-7890" />
-    <ContactItem icon="location" text="Avenida Principal #123, Ciudad xxx" />
+    <ContactItem icon="phone" text="Teléfono: (322) 416-0881" />
+    <ContactItem icon="location" text="Avenida Principal #13-43, Ciudad Cali" />
   </ul>
 );
 

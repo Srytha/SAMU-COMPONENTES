@@ -22,7 +22,7 @@ export default function CancelarTurno() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch("https://desarrollouv.dismatexco.com//service/cancelar-turno", {
+      const response = await fetch("https://projectdesarrollo.onrender.com/service/cancelar-turno", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -68,17 +68,18 @@ export default function CancelarTurno() {
         {/* Contenido principal */}
         <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
           <div className="max-w-2xl mx-auto">
-            <div className="mb-6">
-              <Link href="/vistaPaciente" className="text-blue-600 hover:underline flex items-center gap-1 mb-4">
-                <ArrowLeft className="h-4 w-4" />
-                Volver al panel principal
-              </Link>
-
-              <h1 className="text-2xl md:text-3xl font-bold mb-2">Cancelar Turno</h1>
-              <p className="text-gray-500">Seleccione el servicio del que desea cancelar el turno.</p>
-            </div>
+            <Link href="/vistaPaciente" className="text-blue-600 hover:underline flex items-center gap-1 mb-4">
+              <ArrowLeft className="h-4 w-4" />
+              Volver al panel principal
+            </Link>
 
             <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+              {/* Título dentro del cuadro */}
+              <div className="mb-6">
+                <h1 className="text-2xl md:text-3xl font-bold text-blue-800">Cancelar Turno</h1>
+                <p className="text-gray-500">Seleccione el servicio del que desea cancelar el turno.</p>
+              </div>
+
               {/* Mensaje de éxito */}
               {success && (
                 <div className="bg-green-50 border border-green-200 text-green-800 rounded-lg p-4 mb-6">

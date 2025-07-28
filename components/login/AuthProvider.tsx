@@ -20,7 +20,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 // Configuración de la API - USA LA MISMA BASE URL
-const API_BASE_URL = "https://desarrollouv.dismatexco.com/auth"
+const API_BASE_URL = "https://projectdesarrollo.onrender.com/auth"
 
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext)

@@ -34,7 +34,7 @@ const ServiceTypesChart: React.FC = () => {
         const token = localStorage.getItem('token'); 
         if (!token) throw new Error('No token found');
 
-        const response = await fetch("https://desarrollouv.dismatexco.com/stats/tipos-servicio", {
+        const response = await fetch("https://projectdesarrollo.onrender.com/stats/tipos-servicio", {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

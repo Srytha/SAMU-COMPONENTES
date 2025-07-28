@@ -33,7 +33,7 @@ const PerformanceChart: React.FC = () => {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('No token found');
 
-        const response = await fetch('https://desarrollouv.dismatexco.com/stats/rendimiento-punto-atencion', {
+        const response = await fetch('https://projectdesarrollo.onrender.com/stats/rendimiento-punto-atencion', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

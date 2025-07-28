@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { UserPlus } from "lucide-react";
+
 
 export default function RegistroForm() {
   const router = useRouter();
@@ -55,7 +57,7 @@ export default function RegistroForm() {
         ...(formData.puntoAtencion && { puntoAtencion: formData.puntoAtencion }),
       };
 
-      const res = await fetch("https://desarrollouv.dismatexco.com/auth/registro", {
+      const res = await fetch("https://projectdesarrollo.onrender.com/auth/registro", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -79,15 +81,22 @@ export default function RegistroForm() {
 
 
 // Finalizacion de la conexion
+return (
+  <div className="max-w-2xl mx-auto px-0.9">
+    
 
-  return (
+    {/* Card principal */}
     <Card>
-      <CardHeader>
-        <CardTitle>Registro</CardTitle>
-        <CardDescription>Ingrese sus datos para crear una cuenta</CardDescription>
+      {/* Header con título a la izquierda e ícono a la derecha */}
+      <CardHeader className="pb-0">
+            <CardTitle className="text-2xl font-bold text-gray-800">Crear Cuenta</CardTitle>
+            <CardDescription className="text-gray-600">
+              Complete el formulario para registrarse como paciente
+            </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 mt-4">
+        {/* Primera fila */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="cedula">Cédula</Label>
@@ -110,6 +119,7 @@ export default function RegistroForm() {
           </div>
         </div>
 
+        {/* Segunda fila */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="edad">Edad</Label>
@@ -137,12 +147,13 @@ export default function RegistroForm() {
           </div>
         </div>
 
+        {/* Tercera fila */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="celular">Celular</Label>
             <Input
               id="celular"
-              placeholder="Ingrese su número de celular (10 dígitos)"
+              placeholder="Ingrese su número de celular"
               type="tel"
               value={formData.celular}
               onChange={handleChange("celular")}
@@ -160,6 +171,7 @@ export default function RegistroForm() {
           </div>
         </div>
 
+        {/* Contraseñas */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="password">Contraseña</Label>
@@ -187,6 +199,7 @@ export default function RegistroForm() {
           </div>
         </div>
 
+        {/* Condición prioritaria */}
         <div className="space-y-2">
           <Label htmlFor="discapacidad">Condición Prioritaria (opcional)</Label>
           <Select
@@ -203,36 +216,43 @@ export default function RegistroForm() {
             </SelectContent>
           </Select>
         </div>
+
+        {/* Punto de atención */}
         <div className="space-y-2">
-        <Label htmlFor="puntoAtencion">Punto de Atención</Label>
-        <Select
-          value={formData.puntoAtencion}
-          onValueChange={handleSelect("puntoAtencion")}
-        >
-          <SelectTrigger id="puntoAtencion">
-            <SelectValue placeholder="Seleccione un punto de atención" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="sur">Sur</SelectItem>
-            <SelectItem value="centro">Centro</SelectItem>
-            <SelectItem value="norte">Norte</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+          <Label htmlFor="puntoAtencion">Punto de Atención</Label>
+          <Select
+            value={formData.puntoAtencion}
+            onValueChange={handleSelect("puntoAtencion")}
+          >
+            <SelectTrigger id="puntoAtencion">
+              <SelectValue placeholder="Seleccione un punto de atención" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="sur">Sur</SelectItem>
+              <SelectItem value="centro">Centro</SelectItem>
+              <SelectItem value="norte">Norte</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Mensajes */}
         {error && <div className="text-red-600">{error}</div>}
         {success && <div className="text-green-600">{success}</div>}
+
+        {/* QR */}
         {qrCode && (
           <div className="flex flex-col items-center">
             <p>Escanea este QR con tu app de autenticación:</p>
             <img
               src={`data:image/png;base64,${qrCode}`}
               alt="QR para autenticación"
-              style={{ width: 200, height: 200 }}
+              className="w-40 h-40"
             />
           </div>
         )}
       </CardContent>
 
+      {/* Botones */}
       <CardFooter className="flex flex-col sm:flex-row gap-3 justify-end">
         {!qrCode ? (
           <>
@@ -248,6 +268,6 @@ export default function RegistroForm() {
         )}
       </CardFooter>
     </Card>
-  );
+  </div>
+);
 }
-//

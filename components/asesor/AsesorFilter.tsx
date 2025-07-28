@@ -41,26 +41,7 @@ export const UsersFilter = ({
         />
       </div>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="gap-2">
-            <Download className="h-4 w-4" />
-            <span>Exportar</span>
-            <ChevronDown className="h-4 w-4 ml-2" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => onExport('excel')}>
-            Excel (.xlsx)
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onExport('csv')}>
-            CSV (.csv)
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onExport('pdf')}>
-            PDF (.pdf)
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      
     </div>
   );
 };
