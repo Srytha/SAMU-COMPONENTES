@@ -18,18 +18,9 @@ export default function AnnouncementsCard() {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setError('Token no encontrado');
-          setIsLoading(false);
-          return;
-        }
 
         const res = await fetch('https://projectdesarrollo.onrender.com/administrador/traer_anuncios', {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          method: 'GET'
         });
 
         const data = await res.json();
