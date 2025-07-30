@@ -14,7 +14,7 @@ const WelcomeSection = () => {
   const handleNavigation = (path: string) => () => router.push(path);
 
   return (
-    <section className="relative bg-gradient-to-br from-[#BEDAFF] to-[#AFC5FF] p-8 md:p-12 shadow-md w-full text-center overflow-hidden z-0 h-[240px]">
+    <section className="relative bg-gradient-to-br from-[#BEDAFF] to-[#AFC5FF] p-8 md:p-12 shadow-md w-full text-center overflow-hidden z-0 h-[260px]">
   {/* Floating Dots */}
       {/* Floating Dots (animated background elements) */}
       <div className="floating-dot absolute top-6 left-8 w-4 h-4 bg-white rounded-full opacity-70 z-0 pointer-events-none"></div>

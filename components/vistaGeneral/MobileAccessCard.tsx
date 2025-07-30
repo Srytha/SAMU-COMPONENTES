@@ -8,9 +8,14 @@ const QRCode = RawQRCode as unknown as React.FC<{ value: string; size?: number }
 
 export default function MobileAccessCard() {
   const [mostrarQR, setMostrarQR] = useState(false);
-  // URL Se debe ir cambiando según el entorno de desarrollo :b
-  // ademas solo
-  const urlNgrok = "https://261f-2800-e2-4180-49e-7967-507a-fe83-ecdf.ngrok-free.app";
+
+  // ✅ baseURL dinámico basado en el navegador
+  const baseURL =
+    typeof window !== "undefined"
+      ? window.location.origin
+      : "https://samu-componentes.vercel.app";
+
+  const qrURL = `${baseURL}/consultarEstado`;
 
   return (
     <Card className="mt-4">
@@ -22,7 +27,9 @@ export default function MobileAccessCard() {
           <div className="mb-3">
             <Phone className="h-8 w-8 mx-auto text-blue-600" />
           </div>
-          <p className="text-sm mb-3">Consulte el estado de su turno desde su teléfono móvil</p>
+          <p className="text-sm mb-3">
+            Consulte el estado de su turno desde su teléfono móvil
+          </p>
           <Button
             size="sm"
             variant="outline"
@@ -33,7 +40,7 @@ export default function MobileAccessCard() {
           </Button>
           {mostrarQR && (
             <div className="mt-4 flex justify-center bg-white p-4 rounded">
-              <QRCode value={urlNgrok} size={180} />
+              <QRCode value={qrURL} size={180} />
             </div>
           )}
         </div>
