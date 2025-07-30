@@ -1,104 +1,322 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState } from "react";
+import { Search, User, X } from "lucide-react";
 import { AdminLayout } from "@/components/dashboardPrincipal/layout";
 
-interface UserData {
+type Usuario = {
+  nombre: string;
+  cedula: string | number;
   rol: string;
-}
+  inhabilitado: boolean;
+};
 
-export default function EliminarUsuariosPage() {
-  const [cedula, setCedula] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+const UsersByPuntoA: React.FC = () => {
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [filteredUsuarios, setFilteredUsuarios] = useState<Usuario[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedRol, setSelectedRol] = useState<string>("todos");
+
+  const [showCedulaModal, setShowCedulaModal] = useState<boolean>(false);
+  const [cedulaInput, setCedulaInput] = useState<string>("");
+  const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedToken = localStorage.getItem('token');
-      setToken(storedToken);
-    }
-    setUserData({ rol: 'admin' }); // Simulación de rol admin
+    const fetchUsuarios = async () => {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+
+      try {
+        const response = await fetch(
+          `https://projectdesarrollo.onrender.com/administrador/list_users_by_puntoA`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Error al obtener usuarios");
+        }
+
+        const data = await response.json();
+
+        const usuariosTransformados = data.map((usuario: any) => ({
+          ...usuario,
+          inhabilitado: !usuario.active,
+        }));
+
+        setUsuarios(usuariosTransformados);
+        setFilteredUsuarios(usuariosTransformados);
+      } catch (err: any) {
+        setError(err.message || "Error desconocido");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsuarios();
   }, []);
 
-  const handleEliminar = async () => {
-    if (!cedula.trim()) {
-      setError('Debes ingresar una cédula');
-      return;
+  useEffect(() => {
+    let filtered = usuarios;
+
+    if (searchTerm) {
+      filtered = filtered.filter(usuario =>
+        usuario.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        usuario.cedula.toString().includes(searchTerm)
+      );
     }
 
-    if (!token) {
-      setError('Token no encontrado');
-      return;
+    if (selectedRol !== "todos") {
+      filtered = filtered.filter(
+        usuario => usuario.rol.toLowerCase() === selectedRol.toLowerCase()
+      );
     }
 
-    setIsLoading(true);
-    setError(null);
-    setSuccess(null);
+    setFilteredUsuarios(filtered);
+  }, [searchTerm, selectedRol, usuarios]);
+
+  const getRolBadge = (rol: string) => {
+    const styles = {
+      paciente: "bg-green-500 text-white",
+      asesor: "bg-blue-500 text-white",
+    };
+    return styles[rol.toLowerCase() as keyof typeof styles] || "bg-gray-500 text-white";
+  };
+
+  const getInhabilitadoBadge = (inhabilitado: boolean) => {
+    return inhabilitado
+      ? "bg-red-500 text-white"
+      : "bg-blue-500 text-white";
+  };
+
+  const handleInactivarUsuario = () => {
+    setShowCedulaModal(true);
+  };
+
+  const submitInactivarUsuario = async () => {
+    if (!cedulaInput) return;
+
+    const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`https://projectdesarrollo.onrender.com/administrador/eliminar_usuario`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ cedula }),
-      });
+      const response = await fetch(
+        `https://projectdesarrollo.onrender.com/administrador/deactive_user`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ cedula: cedulaInput }),
+        }
+      );
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || data.error || 'Error al eliminar usuario');
+      const result = await response.json();
 
-      setSuccess(`Usuario con cédula ${cedula} eliminado correctamente`);
-      setCedula('');
-    } catch (err: any) {
-      setError(err.message || 'Ocurrió un error al eliminar el usuario');
+      if (!response.ok) {
+        setNotification({ type: 'error', message: result.message || 'No se pudo inactivar el usuario' });
+      } else {
+        setNotification({ type: 'success', message: result.message || 'Usuario inactivado' });
+        setUsuarios(prev =>
+          prev.map(u =>
+            u.cedula == cedulaInput ? { ...u, inhabilitado: true } : u
+          )
+        );
+      }
+    } catch (error) {
+      setNotification({ type: 'error', message: 'Error al intentar inactivar el usuario' });
     } finally {
-      setIsLoading(false);
+      setShowCedulaModal(false);
+      setCedulaInput("");
     }
   };
 
-  if (!userData) return null;
-
   return (
-    <AdminLayout activeLink="/admin/usuarios" title="Gestión de Usuarios" pageTitle="Eliminar Usuarios">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 mb-4">
-            {error}
-          </div>
-        )}
-        {success && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 mb-4">
-            {success}
+    <AdminLayout activeLink="/admin/usuarios" title="Panel de usuarios">
+      <div className="p-6">
+        {notification && (
+          <div className={`fixed top-6 right-6 z-50 flex items-center gap-4 px-6 py-4 rounded-lg shadow-lg transition
+            ${notification.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
+            <p>{notification.message}</p>
+            <button onClick={() => setNotification(null)}><X className="w-4 h-4" /></button>
           </div>
         )}
 
-        <div className="bg-white p-6 rounded shadow-md border">
-          <h2 className="text-xl font-semibold mb-4">Eliminar Usuario</h2>
+        {showCedulaModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
+              <h2 className="text-lg font-bold mb-4">Inactivar Usuario</h2>
+              <input
+                type="text"
+                placeholder="Ingresa la cédula"
+                value={cedulaInput}
+                onChange={(e) => setCedulaInput(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4 focus:ring-2 focus:ring-blue-500"
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setShowCedulaModal(false)}
+                  className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={submitInactivarUsuario}
+                  className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+                >
+                  Inactivar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
-          <label className="block mb-2 text-sm">Cédula del usuario *</label>
-          <input
-            type="text"
-            value={cedula}
-            onChange={(e) => setCedula(e.target.value)}
-            placeholder="Ingrese la cédula"
-            className="w-full mb-4 p-2 border rounded"
-          />
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                Usuarios por Punto de Atención
+              </h1>
+              <p className="text-gray-600">
+                {filteredUsuarios.length} usuarios encontrados
+              </p>
+            </div>
 
-          <button
-            onClick={handleEliminar}
-            disabled={isLoading}
-            className={`px-4 py-2 text-white rounded ${
-              isLoading ? 'bg-red-400' : 'bg-red-600 hover:bg-red-700'
-            }`}
-          >
-            {isLoading ? 'Eliminando...' : 'Eliminar Usuario'}
-          </button>
+            <div className="flex flex-col sm:flex-row sm:items-center w-full gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <select
+                  value={selectedRol}
+                  onChange={(e) => setSelectedRol(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="todos">Todos los roles</option>
+                  <option value="paciente">Paciente</option>
+                  <option value="asesor">Asesor</option>
+                </select>
+
+                <button
+                  onClick={handleInactivarUsuario}
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                >
+                  Inactivar Usuario
+                </button>
+              </div>
+
+              <div className="relative sm:ml-auto w-full sm:w-auto">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Buscar por nombre"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span className="ml-3 text-gray-600">Cargando usuarios...</span>
+            </div>
+          ) : error ? (
+            <div className="p-6 text-center">
+              <div className="text-red-600 mb-2">Error: {error}</div>
+            </div>
+          ) : filteredUsuarios.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      #
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Usuario
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Cédula
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Rol
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Inhabilitado
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredUsuarios.map((usuario, index) => (
+                    <tr key={`${usuario.cedula}-${index}`} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 font-mono">
+                        {index + 1}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <User className="w-5 h-5 text-white" />
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {usuario.nombre}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900 font-mono">
+                          {usuario.cedula}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRolBadge(
+                            usuario.rol
+                          )}`}
+                        >
+                          {usuario.rol.charAt(0).toUpperCase() + usuario.rol.slice(1)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getInhabilitadoBadge(
+                            usuario.inhabilitado
+                          )}`}
+                        >
+                          {usuario.inhabilitado ? "True" : "False"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No se encontraron usuarios
+              </h3>
+              <p className="text-gray-600">
+                Intenta ajustar tus filtros de búsqueda.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </AdminLayout>
   );
-}
+};
+
+export default UsersByPuntoA;
+
