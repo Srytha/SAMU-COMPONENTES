@@ -64,7 +64,7 @@ export const Sidebar = ({ activeLink, isOpen, onClose }: SidebarProps) => {
   };
 
   const navLinks = [
-    { href: "/admin", icon: <Users />, label: "Gestión de Asesores" },
+    { href: "/admin", icon: <Users />, label: "Registro de Asesores" },
     { href: "/admin/estadisticas", icon: <BarChart3 />, label: "Estadísticas" },
     { href: "/admin/anuncios", icon: <MessageSquare />, label: "Anuncios" },
     { href: "/admin/usuarios", icon: <UserCircle />, label: "Gestión de Usuarios" },
