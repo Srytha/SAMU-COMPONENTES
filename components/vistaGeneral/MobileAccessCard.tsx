@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Phone } from "lucide-react";
 import RawQRCode from "react-qr-code";
 import { Button } from "@/components/ui/button";
@@ -8,14 +8,13 @@ const QRCode = RawQRCode as unknown as React.FC<{ value: string; size?: number }
 
 export default function MobileAccessCard() {
   const [mostrarQR, setMostrarQR] = useState(false);
+  const [qrURL, setQrURL] = useState("https://samu-componentes.vercel.app/consultarEstado");
 
-  // ✅ baseURL dinámico basado en el navegador
-  const baseURL =
-    typeof window !== "undefined"
-      ? window.location.origin
-      : "https://samu-componentes.vercel.app";
-
-  const qrURL = `${baseURL}/consultarEstado`;
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setQrURL(`${window.location.origin}/consultarEstado`);
+    }
+  }, []);
 
   return (
     <Card className="mt-4">
