@@ -20,19 +20,6 @@ export default function PatientForm() {
   const [turnoAsignado, setTurnoAsignado] = useState("");
   const [turnoExistente, setTurnoExistente] = useState("");
 
-  const getTipoInicial = () => {
-    switch (tipoAtencion) {
-      case "consulta":
-        return "C";
-      case "medicamentos":
-        return "M";
-      case "asesoramiento":
-        return "A";
-      default:
-        return "";
-    }
-  };
-
   const handleSubmit = async () => {
     if (!user) {
       alert("Debe iniciar sesión para solicitar un turno.");
@@ -48,6 +35,7 @@ export default function PatientForm() {
     }
 
     setLoading(true);
+
     try {
       const url = new URL("https://projectdesarrollo.onrender.com/service/solicitud");
       url.searchParams.append("service", tipoAtencion);
@@ -62,27 +50,25 @@ export default function PatientForm() {
 
       const data = await response.json();
 
-      const tipoInicial = getTipoInicial();
-
       if (!response.ok) {
         alert(data.error || "Error al solicitar el turno");
         return;
       }
 
+      // ✔️ Usar siempre el código generado por backend
       if (data.mensaje === "Ya tienes un turno pendiente" && data.turno) {
-        const tipo = data.turno.tipo === "prioritario" ? "P" : "G";
-        const numero = String(data.turno.numero).padStart(3, "0");
-        setTurnoExistente(`${tipo}${numero}${tipoInicial}`);
+        setTurnoExistente(data.turno.codigo);
         return;
       }
 
       if (data.turno_prioritario) {
-        setTurnoAsignado(`P${String(data.turno_prioritario).padStart(3, "0")}${tipoInicial}`);
+        setTurnoAsignado(data.turno_prioritario.codigo);
         setShowSuccess(true);
       } else if (data.turno_general) {
-        setTurnoAsignado(`G${String(data.turno_general).padStart(3, "0")}${tipoInicial}`);
+        setTurnoAsignado(data.turno_general.codigo);
         setShowSuccess(true);
       }
+
     } catch (error) {
       console.error("Error al solicitar turno:", error);
       alert("Error de conexión con el servidor");
@@ -93,7 +79,7 @@ export default function PatientForm() {
 
   return (
     <>
-      {/* Modal: Turno ya existente */}
+      {/* Modal: Turno existente */}
       {turnoExistente && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
           <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full text-center">
@@ -147,7 +133,6 @@ export default function PatientForm() {
           <div className="space-y-4">
             <Label className="font-bold text-black text-lg">Tipo de Servicio</Label>
 
-            {/* Opciones en columna */}
             <RadioGroup
               defaultValue="consulta"
               className="flex flex-col gap-4"
