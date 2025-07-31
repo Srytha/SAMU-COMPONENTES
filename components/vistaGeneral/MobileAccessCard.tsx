@@ -8,11 +8,11 @@ const QRCode = RawQRCode as unknown as React.FC<{ value: string; size?: number }
 
 export default function MobileAccessCard() {
   const [mostrarQR, setMostrarQR] = useState(false);
-  const [qrURL, setQrURL] = useState("https://samu-componentes.vercel.app/consultarEstado");
+  const [qrURL, setQrURL] = useState("https://samu-componentes.vercel.app");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setQrURL(`${window.location.origin}/consultarEstado`);
+      setQrURL(`${window.location.origin}`);
     }
   }, []);
 

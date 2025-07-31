@@ -9,6 +9,7 @@ type Turno = {
   id: number
   tipo: "general" | "prioritario"
   numero: number
+  codigo: string // <-- Agregado
   punto: string
 }
 
@@ -156,10 +157,10 @@ const VisualizarTurnos: React.FC = () => {
                     turnoActual.tipo,
                   )}`}
                 >
-                  {formatearNumeroTurno(turnoActual)}
+                  {turnoActual.codigo} {/* <-- Mostrar el código completo */}
                 </div>
                 <div className="space-y-1">
-                  <p className="font-bold text-gray-900">{formatearNumeroTurno(turnoActual)}</p>
+                  <p className="font-bold text-gray-900">{turnoActual.codigo}</p> {/* <-- Mostrar el código */}
                   <p className="text-xs text-gray-600">
                     {turnoActual.tipo === "prioritario" ? "Turno Prioritario" : "Turno General"}
                   </p>
@@ -206,10 +207,10 @@ const VisualizarTurnos: React.FC = () => {
                             turno.tipo,
                           )}`}
                         >
-                          {turno.tipo === "prioritario" ? "P" : "G"}
+                          {turno.codigo} {/* <-- Mostrar el código completo */}
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900 text-sm">{formatearNumeroTurno(turno)}</p>
+                          <p className="font-semibold text-gray-900 text-sm">{turno.codigo}</p> {/* <-- Mostrar el código */}
                           <p className="text-xs text-gray-500">
                             {turno.tipo === "prioritario" ? "Prioritario" : "General"}
                           </p>
