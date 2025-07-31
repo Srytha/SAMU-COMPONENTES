@@ -7,7 +7,13 @@ import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/components/login/AuthProvider";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -44,14 +50,14 @@ export default function LoginContent() {
 
       if (result.success) {
         if (result.rol === "admin") {
-           router.push("/admin");
-            } else if (result.rol === "asesor") {
-            router.push("/asesor");
-           } else {
-    router.push("/vistaPaciente");
-          }
-
-
+          router.push("/admin");
+        } else if (result.rol === "asesor") {
+          router.push("/asesor");
+        } else {
+          router.push("/vistaPaciente");
+        }
+      } else if (result.errorMessage) {
+        setError(result.errorMessage);
       } else {
         setError("Credenciales incorrectas. Verifique su cédula y contraseña.");
       }
@@ -133,7 +139,8 @@ export default function LoginContent() {
                       }}
                       className={cn(
                         "pl-12 py-3 border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-lg",
-                        error && "border-red-300 focus:border-red-500 focus:ring-red-500"
+                        error &&
+                          "border-red-300 focus:border-red-500 focus:ring-red-500"
                       )}
                       disabled={isLoading}
                     />

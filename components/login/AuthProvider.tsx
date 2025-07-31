@@ -12,7 +12,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (cedula: string, password: string) => Promise<{ success: boolean; rol?: string }>;
+  login: (cedula: string, password: string) => Promise<{ success: boolean; rol?: string; errorMessage?: string }>;
   logout: () => void;
   isLoading: boolean;
   checkAuthStatus: () => Promise<void>;
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(false);
   };
 
-  const login = async (cedula: string, password: string): Promise<{ success: boolean; rol?: string }> => {
+  const login = async (cedula: string, password: string): Promise<{ success: boolean; rol?: string; errorMessage?: string }> => {
     try {
       const res = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
@@ -99,10 +99,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return { success: true, rol: data.message };
       }
 
+      // Manejar error 423 (usuario bloqueado)
+      if (res.status === 423 && data && data.message) {
+        return { success: false, errorMessage: data.message };
+      }
+
+      // Manejar error 401 (contraseña incorrecta)
+      if (res.status === 401 && data && data.message) {
+        // Puedes incluir los intentos restantes si lo deseas
+        let msg = data.message;
+        if (typeof data.intentos_restantes === "number") {
+          msg += ` Intentos restantes: ${data.intentos_restantes}`;
+        }
+        return { success: false, errorMessage: msg };
+      }
+
       return { success: false };
     } catch (error) {
       console.error("Error de login:", error);
-      return { success: false };
+      return { success: false, errorMessage: "Error de conexión con el servidor. Intente nuevamente." };
     }
   };
 

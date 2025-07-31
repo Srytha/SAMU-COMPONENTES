@@ -24,7 +24,6 @@ const VisualizarTurnosPage: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [puntoAtencion, setPuntoAtencion] = useState<string>("sur");
 
-  
   const servicioClave = "consulta";
 
   const puntosAtencion: PuntoAtencion[] = [
@@ -39,21 +38,18 @@ const VisualizarTurnosPage: React.FC = () => {
       setError("");
 
       const token = localStorage.getItem("token");
+      // Cambia la URL para usar query param
       const url = new URL(
-        "https://projectdesarrollo.onrender.com/service/visualizar-turnos"
+        `https://projectdesarrollo.onrender.com/service/visualizar-turnos`
       );
-      url.searchParams.append("servicio", servicioClave);
       url.searchParams.append("puntoAtencion", puntoParam);
 
       const response = await fetch(url.toString(), {
-        method: "POST",
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          puntoAtencion: puntoParam,
-        }),
       });
 
       if (!response.ok) {
@@ -168,11 +164,8 @@ const VisualizarTurnosPage: React.FC = () => {
                         : "Turno General"}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {
-                        puntosAtencion.find(
-                          (p) => p.value === turnoActual.punto
-                        )?.label || turnoActual.punto
-                      }
+                      {puntosAtencion.find((p) => p.value === turnoActual.punto)
+                        ?.label || turnoActual.punto}
                     </p>
                   </div>
                 </div>

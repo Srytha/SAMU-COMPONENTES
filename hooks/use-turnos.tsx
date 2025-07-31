@@ -23,13 +23,16 @@ export const useTurnos = (puntoAtencion: string) => {
         return
       }
 
-      const response = await fetch(`${API_BASE_URL}/visualizar-turnos`, {
-        method: "POST",
+      // Construir la URL con el query param
+      const url = new URL(`${API_BASE_URL}/visualizar-turnos`)
+      url.searchParams.append("puntoAtencion", puntoAtencion)
+
+      const response = await fetch(url.toString(), {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ puntoAtencion }),
+        }
       })
 
       if (!response.ok) {

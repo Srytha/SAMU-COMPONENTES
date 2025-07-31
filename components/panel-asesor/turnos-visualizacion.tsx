@@ -42,7 +42,7 @@ export const TurnosVisualization = ({ turnos }: TurnosVisualizationProps) => {
           data={turnos.consulta}
           bgGradient="bg-gradient-to-br from-blue-400 to-blue-600"
           iconBg="bg-white/20"
-          textColor="text-white"
+          textColor="text-black"
         />
 
         <ServiceCard
@@ -51,7 +51,7 @@ export const TurnosVisualization = ({ turnos }: TurnosVisualizationProps) => {
           data={turnos.medicamentos}
           bgGradient="bg-gradient-to-br from-green-400 to-green-600"
           iconBg="bg-white/20"
-          textColor="text-white"
+          textColor="text-black"
           suffix="M"
         />
 
@@ -61,7 +61,7 @@ export const TurnosVisualization = ({ turnos }: TurnosVisualizationProps) => {
           data={turnos.asesoramiento}
           bgGradient="bg-gradient-to-br from-purple-400 to-purple-600"
           iconBg="bg-white/20"
-          textColor="text-white"
+          textColor="text-black"
           suffix="A"
         />
       </div>
