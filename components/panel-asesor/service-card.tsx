@@ -25,7 +25,7 @@ interface ServiceCardProps {
 export const ServiceCard = ({ title, icon, data, bgGradient, iconBg, textColor, suffix = "" }: ServiceCardProps) => {
   const formatTurnoNumber = (turno: Turno) => {
     const prefix = turno.tipo === "prioritario" ? "P" : "G"
-    const number = String(turno.numero).padStart(3, "0")
+    const number = String(turno.numero).padStart(3, "")
     return `${prefix}${number}${suffix}`
   }
 
