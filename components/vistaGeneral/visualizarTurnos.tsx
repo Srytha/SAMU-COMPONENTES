@@ -46,7 +46,7 @@ const VisualizarTurnosPage: React.FC = () => {
       url.searchParams.append("puntoAtencion", puntoParam);
 
       const response = await fetch(url.toString(), {
-        method: "POST",
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
