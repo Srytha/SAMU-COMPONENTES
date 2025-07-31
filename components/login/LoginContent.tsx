@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import { useState, FormEvent } from "react";
 import Link from "next/link";
@@ -11,24 +11,21 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { Badge } from '@/components/ui/badge';
+import { Badge } from "@/components/ui/badge";
 
 export default function LoginContent() {
   const router = useRouter();
   const { login } = useAuth();
 
-  // Estados para manejar el formulario
   const [cedula, setCedula] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Función para manejar el envío del formulario
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
 
-    // Validaciones
     if (cedula.trim() === "") {
       setError("Por favor, ingrese su cédula.");
       return;
@@ -41,12 +38,20 @@ export default function LoginContent() {
 
     try {
       setIsLoading(true);
-      
-      const success = await login(cedula, password);
-      console.log("Resultado del login:", success);
-      if (success) {
-        // Redireccionar al dashboard o página principal
-        router.push("/vistaPaciente"); // Ajusta la ruta según tu aplicación
+
+      const result = await login(cedula, password);
+      console.log("Resultado del login:", result);
+
+      if (result.success) {
+        if (result.rol === "admin") {
+           router.push("/admin");
+            } else if (result.rol === "asesor") {
+            router.push("/asesor");
+           } else {
+    router.push("/vistaPaciente");
+          }
+
+
       } else {
         setError("Credenciales incorrectas. Verifique su cédula y contraseña.");
       }
@@ -60,7 +65,6 @@ export default function LoginContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-indigo-50">
-      
       {/* Encabezado */}
       <header className="bg-blue-600 text-white sticky top-0 z-10 shadow-md py-3">
         <div className="container mx-auto px-4 flex items-center justify-between">
@@ -79,10 +83,9 @@ export default function LoginContent() {
       {/* Contenido principal */}
       <main className="flex-1 flex items-center justify-center px-4 py-16">
         <div className="w-full max-w-md">
-
           {/* Botón de volver */}
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors mb-10 group"
           >
             <ArrowLeft className="h-5 w-5 group-hover:transform group-hover:-translate-x-1 transition-transform" />
@@ -92,7 +95,6 @@ export default function LoginContent() {
           {/* Formulario de inicio de sesión */}
           <form onSubmit={handleLogin}>
             <Card className="shadow-lg border-0 relative">
-
               <div className="absolute -top-16 left-1/2 transform -translate-x-1/2">
                 <div className="bg-blue-600 h-20 w-20 rounded-full flex items-center justify-center shadow-md">
                   <User className="h-10 w-10 text-white" />
@@ -108,10 +110,7 @@ export default function LoginContent() {
                 </p>
               </CardHeader>
 
-              {/* Cuerpo del formulario */}
               <CardContent className="space-y-6 px-8">
-                
-                {/* Alerta de error */}
                 {error && (
                   <div className="bg-red-50 border border-red-200 text-red-700 px-5 py-4 rounded flex items-start gap-3">
                     <AlertCircle className="h-6 w-6 mt-0.5 flex-shrink-0" />
@@ -119,7 +118,6 @@ export default function LoginContent() {
                   </div>
                 )}
 
-                {/* Campo de cédula */}
                 <div className="space-y-3">
                   <Label htmlFor="cedula" className="text-lg text-gray-700">
                     Cédula de Identidad
@@ -148,7 +146,6 @@ export default function LoginContent() {
                   </p>
                 </div>
 
-                {/* Campo de contraseña - OBLIGATORIO */}
                 <div className="space-y-3">
                   <Label htmlFor="password" className="text-lg text-gray-700">
                     Contraseña <span className="text-red-500">*</span>
@@ -173,12 +170,11 @@ export default function LoginContent() {
                   </div>
                 </div>
 
-                {/* Enlace para registro */}
                 <div className="pt-2 text-center">
                   <p className="text-gray-600">
                     ¿No tienes una cuenta?{" "}
-                    <Link 
-                      href="/registro" 
+                    <Link
+                      href="/registro"
                       className="text-blue-600 hover:underline font-medium"
                     >
                       Regístrate aquí
@@ -187,14 +183,11 @@ export default function LoginContent() {
                 </div>
               </CardContent>
 
-              {/* Botones de acción */}
               <CardFooter className="flex flex-col gap-4 px-8 pb-8">
                 <div className="flex flex-col sm:flex-row gap-3 w-full justify-end">
-                  
-                  {/* Botón cancelar */}
-                  <Button 
+                  <Button
                     type="button"
-                    variant="outline" 
+                    variant="outline"
                     onClick={() => window.history.back()}
                     className="border-gray-300 text-gray-700 hover:bg-gray-50 text-lg w-full sm:w-auto"
                     disabled={isLoading}
@@ -202,8 +195,7 @@ export default function LoginContent() {
                     Cancelar
                   </Button>
 
-                  {/* Botón login */}
-                  <Button 
+                  <Button
                     type="submit"
                     className="bg-blue-600 hover:bg-blue-700 text-white text-lg w-full sm:w-auto"
                     disabled={isLoading}
@@ -217,7 +209,6 @@ export default function LoginContent() {
                       "Iniciar Sesión"
                     )}
                   </Button>
-
                 </div>
               </CardFooter>
             </Card>
