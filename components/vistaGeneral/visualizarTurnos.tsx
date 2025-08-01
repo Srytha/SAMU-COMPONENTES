@@ -240,7 +240,7 @@ const VisualizarTurnos: React.FC = () => {
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                   <Clock size={20} className="text-yellow-500" />
-                  Proximos turnos
+                  Turnos atendidos
                 </h3>
                 <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
                   Últimos {ultimosTurnos.length}
