@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useTurnos } from "@/hooks/use-turnos"
 import { ControlPanel } from "@/components/panel-asesor/control-panel"
 import { TurnosVisualization } from "@/components/panel-asesor/turnos-visualizacion"
@@ -15,6 +15,12 @@ const PasarTurno: React.FC = () => {
   const handlePasarTurno = () => {
     pasarTurno(servicio)
   }
+
+  useEffect(() => {
+    obtenerTurnos()
+    const interval = setInterval(() => obtenerTurnos(), 3000) // Antes: 30000
+    return () => clearInterval(interval)
+  }, [puntoAtencion])
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
